@@ -1,0 +1,10 @@
+{% extends "pharmacy_view.html"%}
+
+
+<p>list of available medicines to re-stock</p>
+
+<ul>
+    {% for medicine in medicine_list %}
+    <li>{{medicine}}</li>
+    {% endfor %}
+</ul>
