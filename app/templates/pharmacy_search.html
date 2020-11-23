@@ -1,4 +1,4 @@
-{% extends "plant_view.html"%}
+{% extends "pharmacy_view.html"%}
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {%block title%}
@@ -10,12 +10,12 @@
     <form action="" method ="POST" novalidate>
         <dl>
             {{ form.csrf_token }}
-            {{ wtf.form_field(form.medicine) }}
-            {{ wtf.form_field(form.quantity) }}
-            {{ wtf.form_field(form.unit_price) }}
+            {{ wtf.form_field(form.searchbar) }}
+            {{ wtf.form_field(form.pharmacy) }}
+            {{ wtf.form_field(form.sortby) }}
+            {{ wtf.form_field(form.order) }}
             <input class="btn btn-primary" type="submit" value="Submit">
         </dl>
     </form>
 </div>
 {% endblock %}
-

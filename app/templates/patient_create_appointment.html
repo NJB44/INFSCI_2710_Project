@@ -1,2 +1,21 @@
 {% extends "patient_view.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+
+{%block title%}
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form action="" method ="POST" novalidate>
+        <dl>
+            {{ form.csrf_token }}
+            {{ wtf.form_field(form.apt_date) }}
+            {{ wtf.form_field(form.apt_time) }}
+            <input class="btn btn-primary" type="submit" value="Submit">
+        </dl>
+    </form>
+</div>
+{% endblock %}
+
+

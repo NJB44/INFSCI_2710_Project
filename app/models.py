@@ -2,6 +2,7 @@ from datetime import datetime
 from app import db 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from app import login
 
 class user(UserMixin ,db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -18,159 +19,146 @@ class user(UserMixin ,db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+@login.user_loader 
+def load_user(id):
+    return user.query.get(id)
+
+
 class pharm_plant(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
-    address = db.Column(db.String(64))
-    city = db.Column(db.String(64))
-    state = db.Column(db.String(64))
-    zipcode = db.Column(db.Integer)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    pp_id = db.Column(db.String(8), primary_key=True)
+    pp_name = db.Column(db.String(64))
+    pp_address = db.Column(db.String(64))
+    pp_city = db.Column(db.String(64))
+    pp_state = db.Column(db.String(64))
+    pp_zipcode = db.Column(db.String(64))
 
     def __repr__(self):
-        return '<Plant {}>'.format(self.name)
+        return '<Plant {}>'.format(self.pp_name)
 
 class medicine(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    m_id = db.Column(db.String(5), primary_key=True)
     category = db.Column(db.String(64))
-    name = db.Column(db.String(64))
+    m_medicine = db.Column(db.String(64))
     ingredient = db.Column(db.String(64))
 
     def __repr__(self):
-        return '<Medicine {}>'.format(self.name)
+        return '<Medicine {}>'.format(self.m_medicine)
 
 
 class plant_inven(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    m_id = db.Column(db.Integer, db.ForeignKey("medicine.id")) #prim key
-    pp_id = db.Column(db.Integer, db.ForeignKey("pharmacy.id")) #prim key
+    m_id = db.Column(db.String(5), db.ForeignKey("medicine.m_id"), primary_key = True)
+    pp_id = db.Column(db.String(8), db.ForeignKey("pharm_plant.pp_id"), primary_key = True) 
     stock_quant = db.Column(db.Integer)
-    unit_price = db.Column(db.Integer)
+    unit_price = db.Column(db.Float)
 
     def __repr__(self):
         return '<plant inventory {}>'.format(self.pp_id)
 
 
 class shipments(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    pp_id = db.Column(db.Integer,db.ForeignKey("plant.id"))
-    m_id = db.Column(db.Integer,db.ForeignKey("medicine.id"))
-    pc_id = db.Column(db.Integer,db.ForeignKey("pharmacy.id"))
-    quant = db.Column(db.Integer)
-    price = db.Column(db.Float) #CHECK THIS
-    order_date = db.Column(db.Date) #CHECK THIS
-    ship_date = db.Column(db.Date) #CHECK THIS
-    delivery_date = db.Column(db.Date) #CHECK THIS
+    s_id = db.Column(db.String(9), primary_key=True)
+    pp_id = db.Column(db.String(8),db.ForeignKey("plant.pp_id"))
+    m_id = db.Column(db.String(5),db.ForeignKey("medicine.m_id"))
+    pc_id = db.Column(db.String(8),db.ForeignKey("pharmacy.pc_id"))
+    s_Quant = db.Column(db.Integer)
+    TotalCost = db.Column(db.Float) 
+    s_order_date = db.Column(db.Date) 
+    s_ship_date = db.Column(db.Date) 
+    s_delivery_date = db.Column(db.Date) 
+    s_status = db.Column(db.String(64))
+
 
     def __repr__(self):
-        return '<Shipment {}>'.format(self.order_num)
+        return '<Shipment {}>'.format(self.s_id)
 
 
 class pharm(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
-    address = db.Column(db.String(64))
-    city = db.Column(db.String(64))
-    state = db.Column(db.String(64))
-    zipcode = db.Column(db.Integer)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    pc_id = db.Column(db.String(8), primary_key=True)
+    pc_name = db.Column(db.String(64))
+    pc_address = db.Column(db.String(64))
+    pc_city = db.Column(db.String(64))
+    pc_state = db.Column(db.String(64))
+    pc_zipcode = db.Column(db.String(64))
 
     def __repr__(self):
-        return '<Pharmacy {}>'.format(self.name)
+        return '<Pharmacy {}>'.format(self.pc_name)
 
 
 class pharm_inven(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    pc_id = db.Column(db.Integer, db.ForeignKey("pharmacy.id")) #prim key
-    m_id = db.Column(db.Integer, db.ForeignKey("medicine.id") ) #prim key
+    pc_id = db.Column(db.String(8), db.ForeignKey("pharmacy.pc_id"), primary_key= True) #prim key
+    m_id = db.Column(db.String(5), db.ForeignKey("medicine.m_id"), primary_key= True) #prim key
     quant = db.Column(db.Integer)
-    price = db.Column(db.Float) #CHECK THIS
+    price = db.Column(db.Float) 
 
     def __repr__(self):
-        return '<Pharmacy Inventory {}>'.format(pc_id.username)
+        return '<Pharmacy Inventory {}>'.format(self.pc_id)
 
 
 class prescription_order(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date) #CHECK THIS
-    pat_id = db.Column(db.Integer,db.ForeignKey("patient.id"))
-    doc_id = db.Column(db.Integer,db.ForeignKey("doctor.id"))
-    m_id = db.Column(db.Integer,db.ForeignKey("medicine.id"))
-    quant = db.Column(db.Integer)
-    price = db.Column(db.Float) #CHECK THIS
+    order_id = db.Column(db.String(9), primary_key=True)
+    order_status = db.Column(db.String(64))
+    order_date = db.Column(db.Date) 
+    pat_id = db.Column(db.String(9),db.ForeignKey("patient.pat_id"))
+    doc_id = db.Column(db.String(12),db.ForeignKey("doctor.doc_id"))
+    m_id = db.Column(db.String(5),db.ForeignKey("medicine.m_id"))
+    order_quant = db.Column(db.Integer)
+    order_price = db.Column(db.Float) 
 
     def __repr__(self):
         return '<prescription order {}>'.format(self.order_id)
 
 
 class patient(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    doc_id = db.Column(db.Integer,db.ForeignKey("doctor.id"))
-    first_name = db.Column(db.String(64))
-    last_name = db.Column(db.String(64))
-    gender = db.Column(db.String(1)) #CHECK THIS
-    ethnicity = db.Column(db.String(64))
-    dob = db.Column(db.Date) #CHECK THIS
-    address = db.Column(db.String(64))
-    city = db.Column(db.String(64))
-    state = db.Column(db.String(64))
-    zipcode = db.Column(db.Integer)
-    pat_first_visit_date = db.Column(db.Date) #CHECK THIS
-    doc_off_id = db.Column(db.Integer,db.ForeignKey("doctor_office.id"))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    pat_id = db.Column(db.String(9), primary_key=True)
+    doc_id = db.Column(db.String(12),db.ForeignKey("doctor.id"))
+    pat_first_name = db.Column(db.String(64))
+    pat_last_name = db.Column(db.String(64))
+    pat_gender = db.Column(db.String(1))
+    pat_ethnicity = db.Column(db.String(64))
+    dob = db.Column(db.Date) 
+    pat_address = db.Column(db.String(64))
+    pat_city = db.Column(db.String(64))
+    pat_state = db.Column(db.String(64))
+    pat_zipcode = db.Column(db.Integer)
+    pat_pat_first_visit_date = db.Column(db.Date) 
 
     def __repr__(self):
-        return '<Patient {}>'.format(self.last_name)
+        return '<Patient {}>'.format(self.pat_last_name)
 
 
 class prescription(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    pat_first_name = db.Column(db.String(64))
-    pat_last_name = db.Column(db.String(64))
-    pat_id= db.Column(db.Integer,db.ForeignKey("patient.id"))
-    apt_date = db.Column(db.Date) #CHECK THIS
-    m_id = db.Column(db.Integer,db.ForeignKey("medicine.id"))
-    m_name = db.Column(db.String(64))
-    doc_name = db.Column(db.String(64))
-    doc_id = db.Column(db.Integer,db.ForeignKey("doctor.id"))
-    doc_off_id = db.Column(db.Integer, db.ForeignKey('doctor_office.id'))
+    pr_id = db.Column(db.Integer, primary_key=True)
+    pat_id= db.Column(db.String(9),db.ForeignKey("patient.pat_id"))
+    apt_id= db.Column(db.Integer,db.ForeignKey("appointment.apt_id"))
+    m_id = db.Column(db.String(5),db.ForeignKey("medicine.m_id"))
+    doc_id = db.Column(db.String(12),db.ForeignKey("doctor.doc_id"))
 
     def __repr__(self):
-        return '<prescription name {} for patient {}>'.format(self.m_name, self.pat_last_name)
+        return '<prescription name {} for patient {}>'.format(self.m_id, self.pat_last_name)
 
 
 class appointment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    pat_id = db.Column(db.Integer, db.ForeignKey('patient.id'))
-    doc_id = db.Column(db.Integer, db.ForeignKey('doctor.id'))
-    doc_off_id = db.Column(db.Integer, db.ForeignKey('doctor_office.id'))
-    date = db.Column(db.Date) #CHECK THIS
-    time = db.Column(db.Time) #CHECK THIS
+    apt_id = db.Column(db.Integer, primary_key=True)
+    pat_id = db.Column(db.Integer, db.ForeignKey('patient.pat_id'))
+    doc_id = db.Column(db.Integer, db.ForeignKey('doctor.doc_id'))
+    schedule_day = db.Column(db.Date) 
+    apt_date = db.Column(db.Date) 
+    apt_time = db.Column(db.Time) 
 
     def __repr__(self):
-        return '<Doctor number {} on {} at {} >'.format(self.doc_id, self.date, self.time)
+        return '<Doctor number {} on {} at {} >'.format(self.doc_id, self.apt_date, self.apt_time)
 
 
 class doctor(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(64))
-    last_name = db.Column(db.String(64))
-    specialty = db.Column(db.String(64))
-    doc_off_id = db.Column(db.Integer, db.ForeignKey('doctor_office.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    doc_id = db.Column(db.Integer, primary_key=True)
+    doc_first_name = db.Column(db.String(64))
+    doc_last_name = db.Column(db.String(64))
+    doc_specificity = db.Column(db.String(64))
+    doc_address = db.Column(db.String(64))
+    doc_city = db.Column(db.String(64))
+    doc_state = db.Column(db.String(64))
+    doc_zipcode = db.Column(db.String(64))
 
     def __repr__(self):
-        return '<Dr. {}>'.format(self.last_name)
+        return '<Dr. {}>'.format(self.doc_last_name)
 
-
-class doctor_office(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    facility_name = db.Column(db.String(64))
-    address = db.Column(db.String(64))
-    city = db.Column(db.String(64))
-    state = db.Column(db.String(64))
-    zipcode = db.Column(db.Integer)
-
-    def __repr__(self):
-        return '<Office {}>'.format(self.facility_name)

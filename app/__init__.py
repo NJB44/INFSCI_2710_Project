@@ -12,13 +12,7 @@ migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
 
 #set up a login manager 
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-@login_manager.user_loader
-def load_user(id):
-    return User.query.get(int(id))
-
-
+login = LoginManager()
+login.init_app(app)
 
 from app import routes, models, errors
