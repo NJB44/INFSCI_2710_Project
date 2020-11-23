@@ -1,5 +1,4 @@
     Patient
-
 ·         Login
 
 ·         Make an appointment (link with the patient’s ID)
