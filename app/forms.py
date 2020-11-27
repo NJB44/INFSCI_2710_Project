@@ -4,6 +4,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Integ
 from wtforms.fields.core import DateField, FloatField, SelectField, TimeField
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
+from wtforms.fields.html5 import EmailField
 
 class RegistrationPharmForm(FlaskForm):
     username = StringField('User Name', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'usernames must have only letters, ''numbers, dots or underscores')])
@@ -33,6 +34,8 @@ class RegistrationPatientForm(FlaskForm):
     password2 = PasswordField('Confirm Password', validators=[Required()])
     first_name = StringField('Patient First Name', validators=[Required()])
     last_name = StringField('Patient Last Name', validators=[Required()])
+    email = EmailField('Patient Email', validators=[Required(), Email()])
+    phone_num = StringField('Patient Phone Number', validators=[Required(), Regexp('^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$')])
     submit = SubmitField("Submit Registration")
 
 class RegistrationDocForm(FlaskForm):
@@ -41,6 +44,8 @@ class RegistrationDocForm(FlaskForm):
     password2 = PasswordField('Confirm Password', validators=[Required()])
     first_name = StringField('Doctor First Name', validators=[Required()])
     last_name = StringField('Doctor Last Name', validators=[Required()])
+    email = EmailField('Doctor Email', validators=[Required(), Email()])
+    phone_num = StringField('Doctor Phone Number', validators=[Required(), Regexp('^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$')])
     specialty = StringField('Doctor Specialty', validators=[Required()])
     address = StringField('Doctor Address')
     city = StringField('Doctor City')

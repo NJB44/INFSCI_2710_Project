@@ -5,7 +5,7 @@ from flask_login import UserMixin
 from app import login
 
 class user(UserMixin ,db.Model):
-    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.String(64), primary_key = True) ##TODO Find a way to reference thios to four foreign keys (ibfk?)
     username = db.Column(db.String(20), index=True, unique = True)
     user_type = db.Column(db.String(64))
     password_hash = db.Column(db.String(128))
@@ -39,7 +39,7 @@ class medicine(db.Model):
     m_id = db.Column(db.String(5), primary_key=True)
     category = db.Column(db.String(64))
     m_medicine = db.Column(db.String(64))
-    ingredient = db.Column(db.String(64))
+    ingredient = db.Column(db.String(100))
 
     def __repr__(self):
         return '<Medicine {}>'.format(self.m_medicine)
@@ -64,7 +64,6 @@ class shipments(db.Model):
     TotalCost = db.Column(db.Float) 
     s_order_date = db.Column(db.Date) 
     s_ship_date = db.Column(db.Date) 
-    s_delivery_date = db.Column(db.Date) 
     s_status = db.Column(db.String(64))
 
 
@@ -101,8 +100,9 @@ class prescription_order(db.Model):
     pat_id = db.Column(db.String(9),db.ForeignKey("patient.pat_id"))
     doc_id = db.Column(db.String(12),db.ForeignKey("doctor.doc_id"))
     m_id = db.Column(db.String(5),db.ForeignKey("medicine.m_id"))
-    order_quant = db.Column(db.Integer)
+    Quantity = db.Column(db.Integer)
     order_price = db.Column(db.Float) 
+    pc_id = db.Column(db.String(8), db.ForeignKey("pharm.pc_id"))
 
     def __repr__(self):
         return '<prescription order {}>'.format(self.order_id)
@@ -119,7 +119,7 @@ class patient(db.Model):
     pat_address = db.Column(db.String(64))
     pat_city = db.Column(db.String(64))
     pat_state = db.Column(db.String(64))
-    pat_zipcode = db.Column(db.Integer)
+    pat_zipcode = db.Column(db.String(64))
     pat_pat_first_visit_date = db.Column(db.Date) 
 
     def __repr__(self):
@@ -139,8 +139,8 @@ class prescription(db.Model):
 
 class appointment(db.Model):
     apt_id = db.Column(db.Integer, primary_key=True)
-    pat_id = db.Column(db.Integer, db.ForeignKey('patient.pat_id'))
-    doc_id = db.Column(db.Integer, db.ForeignKey('doctor.doc_id'))
+    pat_id = db.Column(db.String(9), db.ForeignKey('patient.pat_id'))
+    doc_id = db.Column(db.String(12), db.ForeignKey('doctor.doc_id'))
     schedule_day = db.Column(db.Date) 
     apt_date = db.Column(db.Date) 
     apt_time = db.Column(db.Time) 
@@ -150,10 +150,10 @@ class appointment(db.Model):
 
 
 class doctor(db.Model):
-    doc_id = db.Column(db.Integer, primary_key=True)
+    doc_id = db.Column(db.String(12), primary_key=True)
     doc_first_name = db.Column(db.String(64))
     doc_last_name = db.Column(db.String(64))
-    doc_specificity = db.Column(db.String(64))
+    doc_speciality = db.Column(db.String(64))
     doc_address = db.Column(db.String(64))
     doc_city = db.Column(db.String(64))
     doc_state = db.Column(db.String(64))
