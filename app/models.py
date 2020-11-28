@@ -2,7 +2,8 @@ from datetime import datetime
 from app import db 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from app import login
+from app import login, admin
+from flask_admin.contrib.sqla import ModelView
 
 class user(UserMixin ,db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -120,7 +121,7 @@ class patient(db.Model):
     pat_city = db.Column(db.String(64))
     pat_state = db.Column(db.String(64))
     pat_zipcode = db.Column(db.Integer)
-    pat_pat_first_visit_date = db.Column(db.Date) 
+    pat_first_visit_date = db.Column(db.Date) 
 
     def __repr__(self):
         return '<Patient {}>'.format(self.pat_last_name)
@@ -141,7 +142,7 @@ class appointment(db.Model):
     apt_id = db.Column(db.Integer, primary_key=True)
     pat_id = db.Column(db.Integer, db.ForeignKey('patient.pat_id'))
     doc_id = db.Column(db.Integer, db.ForeignKey('doctor.doc_id'))
-    schedule_day = db.Column(db.Date) 
+    scedule_day = db.Column(db.Date) 
     apt_date = db.Column(db.Date) 
     apt_time = db.Column(db.Time) 
 
@@ -162,3 +163,15 @@ class doctor(db.Model):
     def __repr__(self):
         return '<Dr. {}>'.format(self.doc_last_name)
 
+
+admin.add_view(ModelView(user, db.session))
+admin.add_view(ModelView(pharm_plant, db.session))
+admin.add_view(ModelView(plant_inven, db.session))
+admin.add_view(ModelView(shipments, db.session))
+admin.add_view(ModelView(pharm, db.session))
+admin.add_view(ModelView(pharm_inven, db.session))
+admin.add_view(ModelView(prescription_order, db.session))
+admin.add_view(ModelView(patient, db.session))
+admin.add_view(ModelView(prescription, db.session))
+admin.add_view(ModelView(appointment, db.session))
+admin.add_view(ModelView(doctor, db.session))

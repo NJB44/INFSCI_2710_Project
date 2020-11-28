@@ -1,1 +1,41 @@
 {% extends "base.html"%}
+{% from 'bootstrap/nav.html' import  render_breadcrumb_item, render_nav_item %}
+
+
+{% block navbar %}
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type = "button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('index')}}">SmartPharm Home</a> 
+        </div>
+        <div class="collapse navbar-collapse" id = "bs-example-navbar-collapse-1">
+            {{render_nav_item('index', 'App home')}}
+            {{render_nav_item('admin_home', 'Admin home')}}
+            {{render_nav_item('doc_home', 'Doctor home')}}
+            {{render_nav_item('pat_home', 'Patient home')}}
+            {{render_nav_item('pharm_home', 'Pharmacy home')}}
+            {{render_nav_item('plant_home', 'Plant home')}}
+        </div>
+    </div>
+
+    <div class="container">
+
+        {{ render_breadcrumb_item('patient_register', 'patient registration') }}
+        {{ render_breadcrumb_item('doctor_register', 'doctor registration') }}
+        {{ render_breadcrumb_item('pharmacy_register', 'pharmacy registration') }}
+        {{ render_breadcrumb_item('plant_register', 'plant registration') }}
+        {{ render_breadcrumb_item('admin_register', 'admin registration') }}
+        {{ render_breadcrumb_item('login', 'login') }}
+        {{ render_breadcrumb_item('logout', 'logout') }}
+    </div>
+</nav>
+
+
+{% endblock  %}

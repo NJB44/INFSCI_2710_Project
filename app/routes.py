@@ -4,7 +4,7 @@ from app.models import doctor, medicine, patient, pharm, pharm_inven, pharm_plan
 from app import db
 from flask import render_template, flash, redirect
 from app import app
-from app.forms import AdminEditDoctor, AdminEditPatient, AdminEditPharmacy, AdminEditPlant, AdminRemoveDoctor, AdminRemovePatient, AdminRemovePharmacy, AdminRemovePlant, DocPresc, LoginForm, PatNewApt, PharmacySearch, PlantAddStock, PlantEditStock, PlantOrderConf, PlantRemoveStock, RegistrationAdminForm, RegistrationDocForm, RegistrationPatientForm, RegistrationPharmForm, RegistrationPlantForm
+from app.forms import AdminEditDoctor, AdminEditPatient, AdminEditPharmacy, AdminEditPlant, AdminRemoveDoctor, AdminRemovePatient, AdminRemovePharmacy, AdminRemovePlant, DocPresc, LoginForm, PatNewApt, PharmacyBuy, PharmacySearch, PlantAddStock, PlantEditStock, PlantOrderConf, PlantRemoveStock, RegistrationAdminForm, RegistrationDocForm, RegistrationPatientForm, RegistrationPharmForm, RegistrationPlantForm
 from . import login
 from flask_login import current_user, login_user, logout_user
 
@@ -129,7 +129,8 @@ def edit_doc():
 def rem_doc():
     form = AdminRemoveDoctor()
     if form.validate_on_submit():
-        pass
+        removed_doc = db.session.query(doctor).filter_by(doctor_id = form.doctor_id.data).first()
+        db.session.remove(removed_doc)
     #FORM
     return render_template('remove_doctor.html', form = form)
 
@@ -138,7 +139,15 @@ def edit_pat():
     #FORM
     form = AdminEditPatient()
     if form.validate_on_submit():
-        pass
+        edited_pat = db.session.query(patient).filter_by(pat_id = form.doctor_id.data).first()
+        edited_pat.first_name = form.first_name.data
+        edited_pat.last_name = form.last_name.data
+        edited_pat.address = form.address.data
+        edited_pat.city = form.city.data
+        edited_pat.state = form.state.data
+        edited_pat.zipcode = form.zipcode.data
+        db.session.commit()
+
     return render_template('edit_patient.html', form = form)
 
 @app.route('/admin_home/remove_patient')
@@ -146,6 +155,8 @@ def rem_pat():
     #FORM
     form = AdminRemovePatient()
     if form.validate_on_submit():
+        removed_pat = db.session.query(patient).filter_by(pat_id = form.doctor_id.data).first()
+        db.session.remove(removed_pat)
         pass
     return render_template('remove_patient.html', form = form)
 
@@ -154,7 +165,12 @@ def edit_pharm():
     #FORM
     form = AdminEditPharmacy()
     if form.validate_on_submit():
-        pass
+        edited_pharm = db.session.query(pharm).filter_by(pp_id = form.doctor_id.data).first()
+        edited_pharm.name = form.name.data
+        edited_pharm.address = form.address.data
+        edited_pharm.city = form.city.data
+        edited_pharm.state = form.state.data
+        edited_pharm.zipcode = form.zipcode.data
     return render_template('edit_pharmacy.html', form = form)
 
 @app.route('/admin_home/remove_pharmacy')
@@ -162,6 +178,8 @@ def rem_pharm():
     #FORM
     form = AdminRemovePharmacy()
     if form.validate_on_submit():
+        removed_pharm = db.session.query(pharm).filter_by(pp_id = form.doctor_id.data).first()
+        db.session.remove(removed_pharm)
         pass
     return render_template('remove_pharmacy.html', form = form)
 
@@ -170,7 +188,13 @@ def edit_plant():
     #FORM
     form = AdminEditPlant()
     if form.validate_on_submit():
-        pass
+        edited_plant = db.session.query(pharm_plant).filter_by(pp_id = form.doctor_id.data).first()
+        edited_plant.name = form.name.data
+        edited_plant.address = form.address.data
+        edited_plant.city = form.city.data
+        edited_plant.state = form.state.data
+        edited_plant.zipcode = form.zipcode.data
+
     return render_template('edit_plant.html', form = form)
 
 @app.route('/admin_home/remove_plant')
@@ -178,7 +202,8 @@ def rem_plant():
     #FORM
     form = AdminRemovePlant()
     if form.validate_on_submit():
-        pass
+        removed_plant = db.session.query(pharm_plant).filter_by(pp_id = form.doctor_id.data).first()
+        db.session.remove(removed_plant)
     return render_template('remove_plant.html', form = form)
 
 
@@ -197,10 +222,9 @@ def doc_presc():
 
 @app.route('/doctor_home/check_appointments')
 def doc_apt():
-    #QUERY
-    doctors_apt = db.session.query(doctor, appointment).join(appointment, doctor.doc_id == appointment.doc_id)
-    return render_template('doctor_check_appointments.html', apts = doctors_apt)
-
+    user_id = current_user.id
+    doctors_apt = db.session.query(doctor, appointment).filter_by(user_id = doctor.doc_id).join(appointment, doctor.doc_id == appointment.doc_id).all()
+    return render_template('doctor_check_appointments.html', appointments = doctors_apt)
 
 ######Patient Pages
 @app.route('/patient_home')
@@ -221,10 +245,9 @@ def pat_new_apt():
 
 @app.route('/patient_home/check_appointments')
 def pat_check_apt():
-    #QUERY
     user_id = current_user.id
     pat_apt = db.session.query(patient, appointment).join(appointment, patient.pat_id == appointment.pat_id).filter(pat_id = user_id).all()
-    return render_template('doctor_check_appointments.html', apts = pat_apt)
+    return render_template('doctor_check_appointments.html', appointments = pat_apt)
 
 
 ######Pharmacy Pages
@@ -234,8 +257,7 @@ def pharm_home():
 
 @app.route('/pharmacy_home/pharmacy_inventory')
 def pharm_inv():
-    #QUERY
-    inventory = db.session.query(pharm_inven, medicine).join(medicine, pharm_inven.m_id == medicine.m_id).filter_by(pc_id = current_user.id)
+    inventory = db.session.query(pharm_inven, medicine).join(medicine, pharm_inven.m_id == medicine.m_id).filter_by(pc_id = current_user.id).all()
     return render_template('pharmacy_inventory.html', inv = inventory)
 
 @app.route('/pharmacy_home/pharmacy_search')
@@ -247,16 +269,33 @@ def pharm_search():
         pass 
     return render_template('pharmacy_search.html', form = form)
 
-@app.route('/pharmacy_home/shipment_history')
-def pharm_ship_hist():
-    #QUERY
-    return render_template('shipment_history.html')
-
 @app.route('/pharmacy_home/shopping')
 def pharm_shop():
     #QUERY
     return render_template('pharmacy_shopping.html')
 
+
+@app.route('/pharmacy_home/pharmacy_med_purchase')
+def pharm_buy(shopping_cart):
+    #FORM
+    form = PharmacyBuy()
+    if form.validate_on_submit():
+        #send to the browsing page
+        pass 
+    return render_template('pharmacy_search.html', form = form, items = shopping_cart)
+
+@app.route('/pharmacy_home/pharmacy_summary')
+def pharm_summ():
+    #QUERY
+    summary_measures = {'total_medicine_quant': 20, 'total_stock_value': 500, 'total_shipments': 3}
+    return render_template('pharmacy_summary.html', agg_measures = summary_measures)
+
+
+
+@app.route('/pharmacy_home/shipment_history')
+def pharm_ship_hist():
+    #QUERY
+    return render_template('shipment_history.html')
 
 ######Plant Pages
 @app.route('/plant_home')
@@ -276,7 +315,7 @@ def plant_order_conf():
         pass
     return render_template('plant_conf.html', form = form)
 
-@app.route('/plant_home/shipment_history')
+@app.route('/plant_home/plant_shipment_history')
 def plant_ship_hist():
     #QUERY
     return render_template('plant_shipment_history.html')

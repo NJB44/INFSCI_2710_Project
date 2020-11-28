@@ -61,23 +61,34 @@ class AdminEditDoctor(FlaskForm):
     first_name = StringField('Doctor First Name', validators=[Required()])
     last_name = StringField('Doctor Last Name', validators=[Required()])
     specialty = StringField('Doctor Specialty', validators=[Required()])
-    submit = SubmitField("Submit Registration")
+    submit = SubmitField("Complete Edit")
 
 class AdminRemoveDoctor(FlaskForm):
     doctor_id = StringField('id for account to remove', validators=[Required()])
-    submit = SubmitField("Submit Registration")
+    submit = SubmitField("Remove")
 
 class AdminEditPatient(FlaskForm):
     patient_id = StringField('id for account to edit', validators=[Required()])
-    submit = SubmitField("Submit Registration")
+    first_name = StringField("Patient First Name")
+    last_name = StringField("Patient Last Name")
+    address = StringField("Patient Address")
+    city = StringField("Patient City")
+    state = StringField("Patient State")
+    zipcode = StringField("Patient Zipcode")
+    submit = SubmitField("Complete Edit")
 
 class AdminRemovePatient(FlaskForm):
     patient_id = StringField('id for account to remove', validators=[Required()])
-    submit = SubmitField("Submit Registration")
+    submit = SubmitField("Remove")
 
 class AdminEditPharmacy(FlaskForm):
     pharmacy_id = StringField('id for account to edit', validators=[Required()])
-    submit = SubmitField("Submit Registration")
+    name = StringField('Pharmacy Name')
+    address = StringField("Pharmacy Address")
+    city = StringField("Pharmacy City")
+    state = StringField("Pharmacy State")
+    zipcode = StringField("Pharmacy Zipcode")
+    submit = SubmitField("Complete Edit")
 
 class AdminRemovePharmacy(FlaskForm):
     pharmacy_id = StringField('id for account to remove', validators=[Required()])
@@ -85,6 +96,11 @@ class AdminRemovePharmacy(FlaskForm):
 
 class AdminEditPlant(FlaskForm):
     plant_id = StringField('id for account to edit', validators=[Required()])
+    name = StringField('Plant Name')
+    address = StringField("Plant Address")
+    city = StringField("Plant City")
+    state = StringField("Plant State")
+    zipcode = StringField("Plant Zipcode")
     submit = SubmitField("Submit Registration")
 
 class AdminRemovePlant(FlaskForm):
@@ -118,6 +134,9 @@ class PharmacySearch(FlaskForm):
     order = SelectField("order", choices = ["ascending","descending"])
     submit = SubmitField("Submit Registration")
 
+class PharmacyBuy(FlaskForm):
+    submit = SubmitField("Submit Registration")
+
 #####Plant forms
 class PlantOrderConf(FlaskForm):
     order_status = SelectField("update order status", validators = [Required()], choices = ['In Progress', 'Ready for Shipment', 'Shipped', 'Delivered'])
@@ -144,6 +163,3 @@ class LoginForm(FlaskForm):
     username = StringField("username", validators=[Required()])
     password = StringField("Password", validators=[Required()])
     submit = SubmitField("Sign in")
-
-class PharmacyMedicinePurchase(FlaskForm):
-    username = StringField("username", validators=[Required()])

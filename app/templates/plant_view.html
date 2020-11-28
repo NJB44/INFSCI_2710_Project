@@ -1,30 +1,25 @@
-{% extends 'bootstrap/base.html' %}
+{% extends "base.html" %}
+{% from 'bootstrap/nav.html' import  render_breadcrumb_item, render_nav_item %}
 
 {% block title %}
-Plant management
+Pharmacy management
 {% endblock  %}
 
 {% block navbar %}
 <nav class="navbar navbar-default">
     <div class="container">
-        <div class="navbar-header">
-            <button type = "button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{{ url_for('plant_home')}}">Plant Home</a> 
+        <div class = 'navbar-header'>
+            <a class="navbar-brand" href="{{ url_for('index')}}">SmartPharm Home</a> 
         </div>
-        <div class="collapse navbar-collapse" id = "bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('plant_inv')}}">Inventory</a></li>
-                <li><a href="{{ url_for('plant_order_conf')}}">Order Confirmation</a></li>
-                <li><a href="{{ url_for('plant_ship_hist')}}">Shipment History</a></li>
-                <li><a href="{{ url_for('plant_add_stock')}}">Add Stock</a></li>
-                <li><a href="{{ url_for('logout')}}">logout</a></li>
-            </ul>
-        </div>
+ 
+    {{ render_breadcrumb_item('plant_inv', 'Inventory')}}
+    {{ render_breadcrumb_item('plant_order_conf', 'Order Confirmation')}}
+    {{ render_breadcrumb_item('plant_ship_hist', 'Shipment History')}}
+    {{ render_breadcrumb_item('plant_add_stock', 'Add Stock')}}
+    {{ render_breadcrumb_item('logout', 'logout')}}
     </div>
 </nav>
+
 {% endblock %}
+
+
