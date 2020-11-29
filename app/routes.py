@@ -40,7 +40,7 @@ def doctor_register():
         highest_id= db.session.query(doctor).order_by(doctor.doc_id.desc()).first()
         highest_id_num = int(highest_id.doc_id[2:])
         id = "DT" + str(highest_id_num + 1)
-        doc = doctor(doc_id = id, doc_first_name = form.first_name.data, doc_last_name = form.last_name.data, doc_specificity = form.specialty.data, doc_address = form.address.data, doc_city = form.city.data, doc_state = form.state.data, doc_zipcode = form.zipcode.data)
+        doc = doctor(doc_id = id, doc_first_name = form.first_name.data, doc_last_name = form.last_name.data, doc_speciality = form.specialty.data, doc_address = form.address.data, doc_city = form.city.data, doc_state = form.state.data, doc_zipcode = form.zipcode.data)
         usr = user(user_id = id, username = form.username.data , user_type = "doctor")
         usr.set_password(form.password.data)
         db.session.add(doc)
@@ -89,10 +89,9 @@ def patient_register():
     if form.validate_on_submit():
         #calculate id here
         highest_id= db.session.query(patient).order_by(patient.pat_id.desc()).first()
-        highest_id_num = int(highest_id.pat_id[2:])
-        id = "DT" + str(highest_id_num + 1)
-        id = 1 #temporary
-        pat = patient(pat_id = id, doc_id = form.doc_id.data, pat_first_name = form.first_name.data, pat_last_name = form.last_name.data, pat_gender = form.gender.data, pat_ethnicity = form.ethnicity.data, pat_dob = form.dob.data)
+        highest_id_num = int(highest_id.pat_id[1:])
+        id = "P" + str(highest_id_num + 1)
+        pat = patient(pat_id = id, doc_id = form.doc_id.data, pat_first_name = form.first_name.data, pat_last_name = form.last_name.data, pat_gender = form.gender.data, pat_ethnicity = form.ethnicity.data, dob = form.dob.data)
         usr = user(user_id = id, username = form.username.data , user_type = "patient")
         usr.set_password(form.password.data)
         db.session.add(pat)
@@ -159,7 +158,7 @@ def pat_new_apt():
 def pat_check_apt():
     user_id = current_user.user_id 
     pat_apt = db.session.query(patient, appointment).join(appointment, patient.pat_id == appointment.pat_id).filter(patient.pat_id == user_id).all()
-    return render_template('doctor_check_appointments.html', appointments = pat_apt)
+    return render_template('patient_check_appointments.html', appointments = pat_apt)
 
 ######Pharmacy Pages
 @login_required
@@ -208,7 +207,7 @@ def pharm_summ():
     #QUERY
     pc_id = current_user.user_id
     #TODO query for real summary measures here
-    summary_measures = {'total_medicine_quant': 20, 'total_stock_value': 500, 'total_shipments': 3}
+    summary_measures = {'unique_medicine_quant': 20, 'total_stock_value': 500, 'total_medicine_quant': 3000}
     return render_template('pharmacy_summary.html', summary_measures = summary_measures)
 
 @app.route('/pharmacy_home/shipment_history')

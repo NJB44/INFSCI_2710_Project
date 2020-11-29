@@ -114,7 +114,7 @@ class prescription_order(db.Model):
 
 class patient(db.Model):
     pat_id = db.Column(db.String(9), primary_key=True)
-    doc_id = db.Column(db.String(12),db.ForeignKey("doctor.id"))
+    doc_id = db.Column(db.String(12),db.ForeignKey("doctor.doc_id"))
     pat_first_name = db.Column(db.String(64))
     pat_last_name = db.Column(db.String(64))
     pat_gender = db.Column(db.String(1))

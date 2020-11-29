@@ -32,12 +32,12 @@ class RegistrationPatientForm(FlaskForm):
     username = StringField('User Name', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'usernames must have only letters, ''numbers, dots or underscores')])
     password = PasswordField('Password', validators=[Required(), EqualTo('password2', message = "Passwords must be identical")])
     password2 = PasswordField('Confirm Password', validators=[Required()])
-    doc_id = StringField('Doctor id', validators=[Required()])
+    doc_id = SelectField('Doctor id', validators=[Required()], choices=["DT1013066794", "DT1003914227"])
     first_name = StringField('Patient First Name', validators=[Required()])
     last_name = StringField('Patient Last Name', validators=[Required()])
     gender = SelectField("Patient Gender", validators=[Required()], choices = ["M", "F"])
     ethnicity = SelectField("Patient ethnicity", validators=[Required()], choices= ["American Indian or Alaska Native", "Asian", "Black or African American", "Hispanic or Latino", "Native Hawaiian or Other Pacific Islander", "White"])
-    dob = DateField("Patient date of birth", validators=[Required()])
+    dob = StringField("Patient date of birth", validators=[Required(), Regexp('^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$', 0, 'Date must be in YYYY-MM-DD format')])
     email_address = StringField('Patient Email Address', validators=[Required(), Regexp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', 0, "must be a valid phone-number (###-###-####)")])
     phone_number = StringField('Patient Phone Number', validators=[Required(), Regexp('[2-9]\d{2}-\d{3}-\d{4}$', 0, 'must be a valid email address')])
     submit = SubmitField("Submit Registration")
@@ -60,16 +60,16 @@ class RegistrationDocForm(FlaskForm):
 #####Patient forms
 class PatNewApt(FlaskForm):
     doc_id = StringField("enter doctor id here")
-    apt_date = DateField('select a day for the appointment', validators=[Required()])
+    apt_date = StringField('select a day for the appointment', validators=[Required(), Regexp('^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$', 0, 'Date must be in YYYY-MM-DD format')])
     apt_time = TimeField('select a time for the appointment', validators=[Required()])
     submit = SubmitField("Submit Registration")
 
 #####Doctor forms
 class DocPresc(FlaskForm):
-    order_date = DateField("What day?", validators=[Required()])
+    order_date = StringField("What day?", validators=[Required(),  Regexp('^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$', 0, 'Date must be in YYYY-MM-DD format')])
     pat_id = StringField("What is the patient's id", validators=[Required()])
-    m_id = StringField("What is the patient's id", validators=[Required()])
-    pc_id = StringField("What is the patient's id", validators=[Required()])
+    m_id = StringField("What is the medicine id", validators=[Required()])
+    pc_id = StringField("What is the pharmacy id", validators=[Required()])
     order_quant = StringField("How many are being prescribed", validators=[Required()])
     submit = SubmitField("Submit Registration")
 
