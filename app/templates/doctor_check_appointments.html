@@ -1,10 +1,15 @@
 {% extends "doctor_view.html" %}
-    <li>
-       <i class="fas fa-list-ul">
-        September 4th 2020 5:00PM in office 340
-        </i>
-    </li>
-    <li>
-        October 8th 2020 2:00PM in office 343
-    </li>
-</i>
+
+{% block content %}
+
+<ul class = "list-group">
+
+    {% for apt in appointments %}
+
+    <li class="list-group-item">You have an appointment on {{apt.appointment.apt_date}} at {{apt.appointment.apt_time}} with patient {{apt.appointment.pat_id}}</li>
+        
+    {% endfor %}
+
+</ul>
+
+{% endblock  %}

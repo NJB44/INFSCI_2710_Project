@@ -1,1 +1,10 @@
-{% extends "base.html" %}
+{% extends "index.html" %}
+{% from "bootstrap/form.html" import render_form, render_field %}
+
+{%block title%}
+
+{% endblock %}
+
+{% block content %}
+{{ render_form(form)}}
+{% endblock %}

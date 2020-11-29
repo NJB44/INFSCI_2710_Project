@@ -11,7 +11,7 @@ class RegistrationPharmForm(FlaskForm):
     password = PasswordField('Password', validators=[Required(), EqualTo('password2', message = "Passwords must be identical")])
     password2 = PasswordField('Confirm Password', validators=[Required()])
     name = StringField('Pharmacy Name', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'Name must have only letters, ''numbers, dots or underscores')])
-    address = StringField('Pharmacy Address', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'Address must have only letters, ''numbers, dots or underscores')])
+    address = StringField('Pharmacy Address', validators=[Required(), Length(1,64)])
     city = StringField('Pharmacy City', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'City must have only letters')])
     state = StringField('Pharmacy State', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z_.]*$', 0,'State must have only letters')])
     zipcode = IntegerField('Pharmacy Zipcode', validators=[Required()])
@@ -32,10 +32,19 @@ class RegistrationPatientForm(FlaskForm):
     username = StringField('User Name', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'usernames must have only letters, ''numbers, dots or underscores')])
     password = PasswordField('Password', validators=[Required(), EqualTo('password2', message = "Passwords must be identical")])
     password2 = PasswordField('Confirm Password', validators=[Required()])
+    doc_id = StringField('Doctor id', validators=[Required()])
     first_name = StringField('Patient First Name', validators=[Required()])
     last_name = StringField('Patient Last Name', validators=[Required()])
+<<<<<<< HEAD
     email = EmailField('Patient Email', validators=[Required(), Email()])
     phone_num = StringField('Patient Phone Number', validators=[Required(), Regexp('^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$')])
+=======
+    gender = SelectField("Patient Gender", validators=[Required()], choices = ["M", "F"])
+    ethnicity = SelectField("Patient ethnicity", validators=[Required()], choices= ["American Indian or Alaska Native", "Asian", "Black or African American", "Hispanic or Latino", "Native Hawaiian or Other Pacific Islander", "White"])
+    dob = DateField("Patient date of birth", validators=[Required()])
+    email_address = StringField('Patient Email Address', validators=[Required(), Regexp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', 0, "must be a valid phone-number (###-###-####)")])
+    phone_number = StringField('Patient Phone Number', validators=[Required(), Regexp('[2-9]\d{2}-\d{3}-\d{4}$', 0, 'must be a valid email address')])
+>>>>>>> bootstrap-flask
     submit = SubmitField("Submit Registration")
 
 class RegistrationDocForm(FlaskForm):
@@ -53,49 +62,6 @@ class RegistrationDocForm(FlaskForm):
     zipcode = StringField('Doctor Zipcode')
     submit = SubmitField("Submit Registration")
 
-class RegistrationAdminForm(FlaskForm):
-    username = StringField('User Name', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'usernames must have only letters, ''numbers, dots or underscores')])
-    password = PasswordField('Password', validators=[Required(), EqualTo('password2', message = "Passwords must be identical")])
-    password2 = PasswordField('Confirm Password', validators=[Required()])
-    submit = SubmitField("Submit Registration")
-
-
-#####Admin forms
-class AdminEditDoctor(FlaskForm):
-    doctor_id = StringField('id for account to edit', validators=[Required()])
-    first_name = StringField('Doctor First Name', validators=[Required()])
-    last_name = StringField('Doctor Last Name', validators=[Required()])
-    specialty = StringField('Doctor Specialty', validators=[Required()])
-    submit = SubmitField("Submit Registration")
-
-class AdminRemoveDoctor(FlaskForm):
-    doctor_id = StringField('id for account to remove', validators=[Required()])
-    submit = SubmitField("Submit Registration")
-
-class AdminEditPatient(FlaskForm):
-    patient_id = StringField('id for account to edit', validators=[Required()])
-    submit = SubmitField("Submit Registration")
-
-class AdminRemovePatient(FlaskForm):
-    patient_id = StringField('id for account to remove', validators=[Required()])
-    submit = SubmitField("Submit Registration")
-
-class AdminEditPharmacy(FlaskForm):
-    pharmacy_id = StringField('id for account to edit', validators=[Required()])
-    submit = SubmitField("Submit Registration")
-
-class AdminRemovePharmacy(FlaskForm):
-    pharmacy_id = StringField('id for account to remove', validators=[Required()])
-    submit = SubmitField("Submit Registration")
-
-class AdminEditPlant(FlaskForm):
-    plant_id = StringField('id for account to edit', validators=[Required()])
-    submit = SubmitField("Submit Registration")
-
-class AdminRemovePlant(FlaskForm):
-    plant_id = StringField('id for account to remove', validators=[Required()])
-    submit = SubmitField("Submit Registration")
-
 #####Patient forms
 class PatNewApt(FlaskForm):
     doc_id = StringField("enter doctor id here")
@@ -105,9 +71,11 @@ class PatNewApt(FlaskForm):
 
 #####Doctor forms
 class DocPresc(FlaskForm):
-    pat_name = StringField('name of patient', validators=[Required()])
-    medicine_name = StringField('name of medicine', validators=[Required()])
-    pharmacy = SelectField("name of pharmacy", choices=["pharmacy 1", "pharmacy 2"])
+    order_date = DateField("What day?", validators=[Required()])
+    pat_id = StringField("What is the patient's id", validators=[Required()])
+    m_id = StringField("What is the patient's id", validators=[Required()])
+    pc_id = StringField("What is the patient's id", validators=[Required()])
+    order_quant = StringField("How many are being prescribed", validators=[Required()])
     submit = SubmitField("Submit Registration")
 
 #####Pharmacy forms
@@ -121,6 +89,9 @@ class PharmacySearch(FlaskForm):
     pharmacy = SelectField("select a pharmacy to shop from", choices=["pharmacy 1", "pharmacy 2"])
     sortby = SelectField("sort by", choices=["price", "alphabetical"])
     order = SelectField("order", choices = ["ascending","descending"])
+    submit = SubmitField("Submit Registration")
+
+class PharmacyBuy(FlaskForm):
     submit = SubmitField("Submit Registration")
 
 #####Plant forms
@@ -147,8 +118,5 @@ class PlantRemoveStock(FlaskForm):
 ###Misc 
 class LoginForm(FlaskForm):
     username = StringField("username", validators=[Required()])
-    password = StringField("Password", validators=[Required()])
+    password = StringField("password", validators=[Required()])
     submit = SubmitField("Sign in")
-
-class PharmacyMedicinePurchase(FlaskForm):
-    username = StringField("username", validators=[Required()])

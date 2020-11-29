@@ -18,10 +18,8 @@ mysql-connector-python = "^8.0.22"
 mysql-connector = "^2.2.9"
 SQLAlchemy = "^1.3.20"
 Flask-Sijax = "^0.4.1"
-WTForms-Components = "^0.10.4"
-WTForms-Alchemy = "^0.17.0"
-email-validator = "^1.1.2"
 Bootstrap-Flask = "^1.5.1"
+Flask-Admin = "^1.5.7"
 
 [tool.poetry.dev-dependencies]
 Flask-WTF = "^0.14.3"

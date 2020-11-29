@@ -1,37 +1,33 @@
-{% extends 'bootstrap/base.html' %}
+<!doctype html>
+<html lang="en">
+    <head>
+        {% block head %}
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-{% block title %}
-   Title goes here 
-{% endblock  %}
+        {% block styles %}
+            <!-- Bootstrap CSS -->
+            {{ bootstrap.load_css() }}
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename="style.css")}}">
+        {% endblock %}
 
-{% block navbar %}
-<nav class="navbar navbar-default">
-    <div class="container">
-        <div class="navbar-header">
-            <button type = "button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{{url_for('index') }}">Start of App</a> 
-        </div>
-        <div class="collapse navbar-collapse" id = "bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('patient_register')}}">patient registration</a></li>
-                <li><a href="{{ url_for('doctor_register')}}">doctor registration</a></li>
-                <li><a href="{{ url_for('pharmacy_register')}}">pharmacy registration</a></li>
-                <li><a href="{{ url_for('plant_register')}}">plant registration</a></li>
-                <li><a href="{{ url_for('admin_register')}}">admin registration</a></li>
-                <li><a href="{{ url_for('login')}}">login</a></li>
-                <li><a href="{{ url_for('logout')}}">logout</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-{% endblock %}
+        <title>Your page title</title>
+        {% endblock %}
+        <link rel="icon" type ="image/png" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+    <body>
 
+        {% block navbar %}
+            
+        {% endblock  %}
+        <!-- Your page content -->
+        {% block content %}{% endblock %}
 
-{% block content %}
-    {% block app_content %}{% endblock %}   
-{% endblock  %}
+        {% block scripts %}
+            <!-- Optional JavaScript -->
+            {{ bootstrap.load_js() }}
+        {% endblock %}
+    </body>
+</html>
+

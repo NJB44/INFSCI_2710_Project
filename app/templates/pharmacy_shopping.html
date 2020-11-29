@@ -1,10 +1,43 @@
 {% extends "pharmacy_view.html"%}
 
 
-<p>list of available medicines to re-stock</p>
 
 <ul>
-    {% for medicine in medicine_list %}
+    {% for medicine in stocked_medicines %}
     <li>{{medicine}}</li>
     {% endfor %}
 </ul>
+
+{% block content %}
+   {% for prod in products %}
+       
+    <div class="card h-100">
+        <div class="card-body">
+            <h4 class="card-title">{{prod.medicine.m_medicine}}</h4>
+            <h4 class="card-subtitle">Type: {{prod.medicine.category}}</h4>
+            <p class="card-text">
+                In Stock: {{prod.plant_inven.stock_quant}}
+                Unit Price: {{prod.plant_inven.unit_price}}
+            </p>
+            <button class="btn btn-outline-primary" id="dec{{prod.plant_inven.m_id}}{{prod.plant_inven.pp_id}}" onclick="decrement()">-</button>
+            <input type="text" id="quant{{prod.plant_inven.m_id}}{{prod.plant_inven.pp_id}}">
+            <button class="btn btn-outline-primary" id="inc{{prod.plant_inven.m_id}}{{prod.plant_inven.pp_id}}" onclick="increment()">+</button>
+            <button class="btn btn-primary" id="addToCart{{prod.plant_inven.m_id}}{{prod.plant_inven.pp_id}}" onclick="addtoCart()">Add to cart</button>
+        </div>
+    </div>
+    
+   {% endfor %} 
+
+{% endblock  %}
+
+{% block scripts  %}
+    function increment(){
+    }
+    
+    function decrement(){
+
+    }
+
+    function
+
+{% endblock  %}

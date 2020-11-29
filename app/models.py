@@ -2,7 +2,8 @@ from datetime import datetime
 from app import db 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from app import login
+from app import login, admin
+from flask_admin.contrib.sqla import ModelView
 
 class user(UserMixin ,db.Model):
     user_id = db.Column(db.String(64), primary_key = True) ##TODO Find a way to reference thios to four foreign keys (ibfk?)
@@ -92,7 +93,6 @@ class pharm_inven(db.Model):
     def __repr__(self):
         return '<Pharmacy Inventory {}>'.format(self.pc_id)
 
-
 class prescription_order(db.Model):
     order_id = db.Column(db.String(9), primary_key=True)
     order_status = db.Column(db.String(64))
@@ -100,7 +100,8 @@ class prescription_order(db.Model):
     pat_id = db.Column(db.String(9),db.ForeignKey("patient.pat_id"))
     doc_id = db.Column(db.String(12),db.ForeignKey("doctor.doc_id"))
     m_id = db.Column(db.String(5),db.ForeignKey("medicine.m_id"))
-    Quantity = db.Column(db.Integer)
+    pc_id = db.Column(db.String(8))
+    order_quant = db.Column(db.Integer)
     order_price = db.Column(db.Float) 
     pc_id = db.Column(db.String(8), db.ForeignKey("pharm.pc_id"))
 
@@ -119,29 +120,17 @@ class patient(db.Model):
     pat_address = db.Column(db.String(64))
     pat_city = db.Column(db.String(64))
     pat_state = db.Column(db.String(64))
-    pat_zipcode = db.Column(db.String(64))
-    pat_pat_first_visit_date = db.Column(db.Date) 
+    pat_zipcode = db.Column(db.Integer)
+    pat_first_visit_date = db.Column(db.Date) 
 
     def __repr__(self):
         return '<Patient {}>'.format(self.pat_last_name)
 
-
-class prescription(db.Model):
-    pr_id = db.Column(db.Integer, primary_key=True)
-    pat_id= db.Column(db.String(9),db.ForeignKey("patient.pat_id"))
-    apt_id= db.Column(db.Integer,db.ForeignKey("appointment.apt_id"))
-    m_id = db.Column(db.String(5),db.ForeignKey("medicine.m_id"))
-    doc_id = db.Column(db.String(12),db.ForeignKey("doctor.doc_id"))
-
-    def __repr__(self):
-        return '<prescription name {} for patient {}>'.format(self.m_id, self.pat_last_name)
-
-
 class appointment(db.Model):
     apt_id = db.Column(db.Integer, primary_key=True)
-    pat_id = db.Column(db.String(9), db.ForeignKey('patient.pat_id'))
-    doc_id = db.Column(db.String(12), db.ForeignKey('doctor.doc_id'))
-    schedule_day = db.Column(db.Date) 
+    pat_id = db.Column(db.Integer, db.ForeignKey('patient.pat_id'))
+    doc_id = db.Column(db.Integer, db.ForeignKey('doctor.doc_id'))
+    scedule_day = db.Column(db.Date) 
     apt_date = db.Column(db.Date) 
     apt_time = db.Column(db.Time) 
 
@@ -162,3 +151,14 @@ class doctor(db.Model):
     def __repr__(self):
         return '<Dr. {}>'.format(self.doc_last_name)
 
+
+admin.add_view(ModelView(user, db.session))
+admin.add_view(ModelView(pharm_plant, db.session))
+admin.add_view(ModelView(plant_inven, db.session))
+admin.add_view(ModelView(shipments, db.session))
+admin.add_view(ModelView(pharm, db.session))
+admin.add_view(ModelView(pharm_inven, db.session))
+admin.add_view(ModelView(prescription_order, db.session))
+admin.add_view(ModelView(patient, db.session))
+admin.add_view(ModelView(appointment, db.session))
+admin.add_view(ModelView(doctor, db.session))
