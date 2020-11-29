@@ -1,5 +1,5 @@
-{%extends "base.html"%}
+{%extends "index.html"%}
 
-{% block app_content %}
-<p>This page does not exist</p>
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename="style.css")}}">
 {% endblock  %}

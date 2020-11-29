@@ -1,41 +1,62 @@
 {% extends "base.html"%}
-{% from 'bootstrap/nav.html' import  render_breadcrumb_item, render_nav_item %}
+{% from 'bootstrap/nav.html' import render_nav_item %}
 
 
 {% block navbar %}
 
-<nav class="navbar navbar-default">
-    <div class="container">
-        <div class="navbar-header">
-            <button type = "button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{{ url_for('index')}}">SmartPharm Home</a> 
-        </div>
-        <div class="collapse navbar-collapse" id = "bs-example-navbar-collapse-1">
-            {{render_nav_item('index', 'App home')}}
-            {{render_nav_item('admin_home', 'Admin home')}}
-            {{render_nav_item('doc_home', 'Doctor home')}}
-            {{render_nav_item('pat_home', 'Patient home')}}
-            {{render_nav_item('pharm_home', 'Pharmacy home')}}
-            {{render_nav_item('plant_home', 'Plant home')}}
-        </div>
-    </div>
 
-    <div class="container">
 
-        {{ render_breadcrumb_item('patient_register', 'patient registration') }}
-        {{ render_breadcrumb_item('doctor_register', 'doctor registration') }}
-        {{ render_breadcrumb_item('pharmacy_register', 'pharmacy registration') }}
-        {{ render_breadcrumb_item('plant_register', 'plant registration') }}
-        {{ render_breadcrumb_item('admin_register', 'admin registration') }}
-        {{ render_breadcrumb_item('login', 'login') }}
-        {{ render_breadcrumb_item('logout', 'logout') }}
+<nav class="navbar navbar-expand-md navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="{{url_for('index')}}">SmartPharm</a>
+        <ul class="nav navbar-nav">
+            {{ render_nav_item('patient_register', 'patient registration') }}
+            {{ render_nav_item('doctor_register', 'doctor registration') }}
+            {{ render_nav_item('pharmacy_register', 'pharmacy registration') }}
+            {{ render_nav_item('plant_register', 'plant registration') }}
+            {{ render_nav_item('login', 'login') }}
+            {{ render_nav_item('logout', 'logout') }}
+        </ul>
     </div>
 </nav>
 
+{% endblock  %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="card h-100">
+            <img class="card-img-top">
+            <div class="card-body">
+                <h4 class="card-title">Patient Home</h4>
+                <p class="card-text">Please login first</p>
+                <a class="btn btn-outline-primary" href="{{url_for('pat_home')}}">Go</a>
+            </div>
+        </div>
+
+        <div class="card h-100">
+            <div class="card-body">
+                <h4 class="card-title">Doctor Home</h4>
+                <p class="card-text">Please login first</p>
+                <a class="btn btn-outline-primary" href="{{url_for('doc_home')}}">Go</a>
+            </div>
+        </div>
+
+        <div class="card h-100">
+            <div class="card-body">
+                <h4 class="card-title">Pharmacy Home</h4>
+                <p class="card-text">Please login first</p>
+                <a class="btn btn-outline-primary" href="{{url_for('pharm_home')}}">Go</a>
+            </div>
+        </div>
+
+        <div class="card h-100">
+            <div class="card-body">
+                <h4 class="card-title">Plant Home</h4>
+                <p class="card-text">Please login first</p>
+                <a class="btn btn-outline-primary" href="{{url_for('plant_home')}}">Go</a>
+            </div>
+        </div>
+    </div>
 
 {% endblock  %}

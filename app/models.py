@@ -94,7 +94,6 @@ class pharm_inven(db.Model):
     def __repr__(self):
         return '<Pharmacy Inventory {}>'.format(self.pc_id)
 
-
 class prescription_order(db.Model):
     order_id = db.Column(db.String(9), primary_key=True)
     order_status = db.Column(db.String(64))
@@ -102,6 +101,7 @@ class prescription_order(db.Model):
     pat_id = db.Column(db.String(9),db.ForeignKey("patient.pat_id"))
     doc_id = db.Column(db.String(12),db.ForeignKey("doctor.doc_id"))
     m_id = db.Column(db.String(5),db.ForeignKey("medicine.m_id"))
+    pc_id = db.Column(db.String(8))
     order_quant = db.Column(db.Integer)
     order_price = db.Column(db.Float) 
 
@@ -125,18 +125,6 @@ class patient(db.Model):
 
     def __repr__(self):
         return '<Patient {}>'.format(self.pat_last_name)
-
-
-class prescription(db.Model):
-    pr_id = db.Column(db.Integer, primary_key=True)
-    pat_id= db.Column(db.String(9),db.ForeignKey("patient.pat_id"))
-    apt_id= db.Column(db.Integer,db.ForeignKey("appointment.apt_id"))
-    m_id = db.Column(db.String(5),db.ForeignKey("medicine.m_id"))
-    doc_id = db.Column(db.String(12),db.ForeignKey("doctor.doc_id"))
-
-    def __repr__(self):
-        return '<prescription name {} for patient {}>'.format(self.m_id, self.pat_last_name)
-
 
 class appointment(db.Model):
     apt_id = db.Column(db.Integer, primary_key=True)
@@ -172,6 +160,5 @@ admin.add_view(ModelView(pharm, db.session))
 admin.add_view(ModelView(pharm_inven, db.session))
 admin.add_view(ModelView(prescription_order, db.session))
 admin.add_view(ModelView(patient, db.session))
-admin.add_view(ModelView(prescription, db.session))
 admin.add_view(ModelView(appointment, db.session))
 admin.add_view(ModelView(doctor, db.session))

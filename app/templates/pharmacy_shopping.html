@@ -1,7 +1,6 @@
 {% extends "pharmacy_view.html"%}
 
 
-<p>list of available medicines to re-stock</p>
 
 <ul>
     {% for medicine in stocked_medicines %}
@@ -10,31 +9,34 @@
 </ul>
 
 {% block content %}
-    <div class="item">
-   
-        <div class="image">
-        <img src="medicine.png" alt="" />
+   {% for prod in products %}
+       
+    <div class="card h-100">
+        <div class="card-body">
+            <h4 class="card-title">{{prod.medicine.m_medicine}}</h4>
+            <h4 class="card-subtitle">Type: {{prod.medicine.category}}</h4>
+            <p class="card-text">
+                In Stock: {{prod.plant_inven.stock_quant}}
+                Unit Price: {{prod.plant_inven.unit_price}}
+            </p>
+            <button class="btn btn-outline-primary" id="inc{{prod.plant_inven.m_id}}{{prod.plant_inven.pp_id}}" onclick="increment()">+</button>
+            <button class="btn btn-outline-primary" id="dec{{prod.plant_inven.m_id}}{{prod.plant_inven.pp_id}}" onclick="decrement()">+</button>
+            <button class="btn btn-primary" id="addToCart{{prod.plant_inven.m_id}}{{prod.plant_inven.pp_id}}" onclick="addtoCart()">Add to cart</button>
         </div>
+    </div>
     
-        <div class="description">
-        <span>Common Projects</span>
-        <span>Bball High</span>
-        <span>White</span>
-        </div>
-    
-        <div class="quantity">
-        <button class="plus-btn" type="button" name="button">
-            <img src="plus.svg" alt="" />
-        </button>
-        <input type="text" name="name" value="1">
-        <button class="minus-btn" type="button" name="button">
-            <img src="minus.svg" alt="" />
-        </button>
-        </div>
-    </div>   
+   {% endfor %} 
 
 {% endblock  %}
 
 {% block scripts  %}
+    function increment(){
+    }
     
+    function decrement(){
+
+    }
+
+    function
+
 {% endblock  %}
