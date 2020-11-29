@@ -41,7 +41,7 @@ def doctor_register():
         highest_id_num = int(highest_id.doc_id[2:])
         id = "DT" + str(highest_id_num + 1)
         doc = doctor(doc_id = id, doc_first_name = form.first_name.data, doc_last_name = form.last_name.data, doc_specificity = form.specialty.data, doc_address = form.address.data, doc_city = form.city.data, doc_state = form.state.data, doc_zipcode = form.zipcode.data)
-        usr = user(id = id, username = form.username.data , user_type = "doctor")
+        usr = user(user_id = id, username = form.username.data , user_type = "doctor")
         usr.set_password(form.password.data)
         db.session.add(doc)
         db.session.add(usr)
@@ -58,7 +58,7 @@ def pharmacy_register():
         highest_id_num = int(highest_id.pc_id[2:])
         id = "PC" + str(highest_id_num + 1)
         phrm = pharm(pc_id = id, pc_name = form.name.data, pc_address = form.address.data, pc_city = form.city.data, pc_state = form.state.data, pc_zipcode = form.zipcode.data)
-        usr = user(id = id, username = form.username.data , user_type = "pharmacy")
+        usr = user(user_id = id, username = form.username.data , user_type = "pharmacy")
         usr.set_password(form.password.data)
         db.session.add(phrm)
         db.session.add(usr)
@@ -75,7 +75,7 @@ def plant_register():
         highest_id_num = int(highest_id.pp_id[2:])
         id = "PP" + str(highest_id_num + 1)
         plant = pharm_plant(pp_id = id, pp_name = form.name.data, pp_address = form.address.data, pp_city = form.city.data, pp_state = form.state.data, pp_zipcode = form.zipcode.data)
-        usr = user(id = id, username = form.username.data , user_type = "plant")
+        usr = user(user_id = id, username = form.username.data , user_type = "plant")
         usr.set_password(form.password.data)
         db.session.add(plant)
         db.session.add(usr)
@@ -93,7 +93,7 @@ def patient_register():
         id = "DT" + str(highest_id_num + 1)
         id = 1 #temporary
         pat = patient(pat_id = id, doc_id = form.doc_id.data, pat_first_name = form.first_name.data, pat_last_name = form.last_name.data, pat_gender = form.gender.data, pat_ethnicity = form.ethnicity.data, pat_dob = form.dob.data)
-        usr = user(id = id, username = form.username.data , user_type = "patient")
+        usr = user(user_id = id, username = form.username.data , user_type = "patient")
         usr.set_password(form.password.data)
         db.session.add(pat)
         db.session.add(usr)
@@ -121,7 +121,7 @@ def doc_presc():
         presc_id = 1 #temp
         order_date = form.order_date.data
         pat_id = form.pat_id.data   
-        doc_id = current_user.id #1 #current_user.id
+        doc_id = current_user.user_id 
         m_id = form.m_id.data   
         pc_id = form.pc_id.data   
         order_quant = form.order_quant.data
@@ -134,7 +134,7 @@ def doc_presc():
 
 @app.route('/doctor_home/check_appointments')
 def doc_apt():
-    user_id = current_user.id #"DT1013066794" #current_user.id
+    user_id = current_user.user_id 
     doctors_apt = db.session.query(doctor, appointment).filter(user_id == doctor.doc_id).join(appointment, doctor.doc_id == appointment.doc_id).all()
     return render_template('doctor_check_appointments.html', appointments = doctors_apt)
 
@@ -149,15 +149,15 @@ def pat_new_apt():
     form = PatNewApt()
     if form.validate_on_submit():
         appointment_id = 1 #replace with code to properly generate this
-        user_id = current_user.id
-        appointment(apt_id = appointment_id, pat_id = current_user.id, doc_id = form.doc_id.data, schedule_day = form.schedule_day.data, apt_date = form.apt_date.data, apt_time = form.apt_time.data)
+        user_id = current_user.user_id
+        appointment(apt_id = appointment_id, pat_id = current_user.user_id, doc_id = form.doc_id.data, schedule_day = form.schedule_day.data, apt_date = form.apt_date.data, apt_time = form.apt_time.data)
         db.session.add(appointment)
         db.session.commit()
     return render_template('patient_create_appointment.html', form = form)
 
 @app.route('/patient_home/check_appointments')
 def pat_check_apt():
-    user_id = current_user.id #"P56544020" #current_user.id
+    user_id = current_user.user_id 
     pat_apt = db.session.query(patient, appointment).join(appointment, patient.pat_id == appointment.pat_id).filter(patient.pat_id == user_id).all()
     return render_template('doctor_check_appointments.html', appointments = pat_apt)
 
@@ -169,7 +169,7 @@ def pharm_home():
 
 @app.route('/pharmacy_home/pharmacy_inventory')
 def pharm_inv():
-    pc_id = current_user.id #"PC165750"
+    pc_id = current_user.user_id 
     inventory = db.session.query(pharm_inven, medicine).filter(pc_id == pharm_inven.pc_id ).join(medicine, pharm_inven.m_id == medicine.m_id).all()
     return render_template('pharmacy_inventory.html', inv = inventory)
 
@@ -180,7 +180,7 @@ def pharm_search():
     if form.validate_on_submit():
         #send to the browsing page
         ##QUERY here based on form input
-        plant_id = current_user.id
+        plant_id = current_user.user_id
         products = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(plant_inven.pp_id == plant_id).all()
         pharm_shop(products) #TODO this likely doesn't work
         pass 
@@ -189,7 +189,7 @@ def pharm_search():
 @app.route('/pharmacy_home/shopping')
 def pharm_shop():
     #QUERY Replace with content from
-    plant_id = current_user.id #"PP690020"
+    plant_id = current_user.user_id 
     prods = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(plant_inven.pp_id == plant_id).all()
     return render_template('pharmacy_shopping.html', products = prods)
 
@@ -206,7 +206,7 @@ def pharm_buy(shopping_cart):
 @app.route('/pharmacy_home/pharmacy_summary')
 def pharm_summ():
     #QUERY
-    pc_id = current_user.id
+    pc_id = current_user.user_id
     #TODO query for real summary measures here
     summary_measures = {'total_medicine_quant': 20, 'total_stock_value': 500, 'total_shipments': 3}
     return render_template('pharmacy_summary.html', summary_measures = summary_measures)
@@ -214,7 +214,7 @@ def pharm_summ():
 @app.route('/pharmacy_home/shipment_history')
 def pharm_ship_hist():
     #QUERY
-    pc_id = current_user.id #"PC880326" #TODO replace with user id
+    pc_id = current_user.user_id 
     hist_shipments = db.session.query(shipments).filter(pc_id == shipments.pc_id).all()
     return render_template('pharmacy_shipment_history.html', shipments = hist_shipments)
 
@@ -226,7 +226,7 @@ def plant_home():
 @app.route('/plant_home/inventory')
 def plant_inv():
     #QUERY
-    pp_id = current_user.id #"PP690020"
+    pp_id = current_user.user_id 
     inventory = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id == medicine.m_id).filter(pp_id == plant_inven.pp_id ).all()
     return render_template('plant_inventory.html', inv = inventory)
 
@@ -241,7 +241,7 @@ def plant_order_conf():
 @app.route('/plant_home/plant_shipment_history')
 def plant_ship_hist():
     #QUERY
-    pp_id = current_user.id #"PP690020"
+    pp_id = current_user.user_id 
     hist_shipments = db.session.query(shipments).filter(pp_id == shipments.pp_id).all()
     return render_template('plant_shipment_history.html', shipments = hist_shipments)
 
@@ -250,7 +250,7 @@ def plant_add_stock():
     #FORM
     form = PlantAddStock()
     if form.validate_on_submit():
-        new_inven = plant_inven(m_id = form.medicine.data, pp_id = current_user.id, stock_quant =  form.quantity.data, unit_price = form.unit_price.data)
+        new_inven = plant_inven(m_id = form.medicine.data, pp_id = current_user.user_id, stock_quant =  form.quantity.data, unit_price = form.unit_price.data)
         db.session.add(new_inven)
         db.session.commit()
         return redirect('plant_inventory.html')
@@ -263,7 +263,7 @@ def plant_edit_stock():
     form = PlantEditStock()
     if form.validate_on_submit():
         edit_inven = 1 #query here
-        edit_inven = plant_inven(m_id = form.medicine.data, pp_id = current_user.id, stock_quant =  form.quantity.data, unit_price = form.unit_price.data)
+        edit_inven = plant_inven(m_id = form.medicine.data, pp_id = current_user.user_id, stock_quant =  form.quantity.data, unit_price = form.unit_price.data)
         db.session.commit()
 
     return render_template('plant_edit_stock.html', form = form)
@@ -273,7 +273,7 @@ def plant_remove_stock():
     #FORM
     form = PlantRemoveStock()
     if form.validate_on_submit():
-        rem_inven = plant_inven(m_id = form.medicine.data, pp_id = current_user.id, stock_quant =  form.quantity.data, unit_price = form.unit_price.data)
+        rem_inven = plant_inven(m_id = form.medicine.data, pp_id = current_user.user_id, stock_quant =  form.quantity.data, unit_price = form.unit_price.data)
         db.session.remove(rem_inven)
         db.session.commit()
     return render_template('plant_remove_stock.html', form = form)

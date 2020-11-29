@@ -35,16 +35,11 @@ class RegistrationPatientForm(FlaskForm):
     doc_id = StringField('Doctor id', validators=[Required()])
     first_name = StringField('Patient First Name', validators=[Required()])
     last_name = StringField('Patient Last Name', validators=[Required()])
-<<<<<<< HEAD
-    email = EmailField('Patient Email', validators=[Required(), Email()])
-    phone_num = StringField('Patient Phone Number', validators=[Required(), Regexp('^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$')])
-=======
     gender = SelectField("Patient Gender", validators=[Required()], choices = ["M", "F"])
     ethnicity = SelectField("Patient ethnicity", validators=[Required()], choices= ["American Indian or Alaska Native", "Asian", "Black or African American", "Hispanic or Latino", "Native Hawaiian or Other Pacific Islander", "White"])
     dob = DateField("Patient date of birth", validators=[Required()])
     email_address = StringField('Patient Email Address', validators=[Required(), Regexp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', 0, "must be a valid phone-number (###-###-####)")])
     phone_number = StringField('Patient Phone Number', validators=[Required(), Regexp('[2-9]\d{2}-\d{3}-\d{4}$', 0, 'must be a valid email address')])
->>>>>>> bootstrap-flask
     submit = SubmitField("Submit Registration")
 
 class RegistrationDocForm(FlaskForm):

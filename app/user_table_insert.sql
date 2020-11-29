@@ -1,6 +1,14 @@
-select * from user;
+CREATE TABLE `user`(
+`user_id` varchar(64) NOT NULL,
+`username` varchar(20) NOT NULL unique,
+`user_type` varchar(64) NOT NULL,
+`password_hash` varchar(128) NOT NULL,
+primary key(`username`));
 
-insert into user(id, username, user_type,password_hash)
+
+
+
+insert into user(user_id, username, user_type,password_hash)
 values ("DT1013066794", "demo_doctor_1", "doctor","pbkdf2:sha256:150000$kbUR6pm0$8f985a44918310e39f7f5647ebcd89a679823338a312306428f3336391124d7c" ),
 ("DT1003914227", "demo_doctor_2", "doctor", "pbkdf2:sha256:150000$vBUWqoSl$5444761fc34d7249ae9437fe606e6f8148b362f36089f107b35d94fcf773c7de'"),
 ("P56544020", "demo_patient_1", "patient", "pbkdf2:sha256:150000$EnUyE0D2$418a45c1036643153d579d813470c10ec1b726d672834f63e5e97fef750e8660"  ),
@@ -19,4 +27,4 @@ values ("DT1013066794", "demo_doctor_1", "doctor","pbkdf2:sha256:150000$kbUR6pm0
 #generate_password_hash('plant_pass_1')
 #generate_password_hash('plant_pass_2')
 
-select * from medicine;
+drop table user;

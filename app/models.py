@@ -6,7 +6,7 @@ from app import login, admin
 from flask_admin.contrib.sqla import ModelView
 
 class user(UserMixin ,db.Model):
-    user_id = db.Column(db.String(64), primary_key = True) ##TODO Find a way to reference thios to four foreign keys (ibfk?)
+    user_id = db.Column(db.String(64), primary_key = True) 
     username = db.Column(db.String(20), index=True, unique = True)
     user_type = db.Column(db.String(64))
     password_hash = db.Column(db.String(128))
@@ -19,6 +19,9 @@ class user(UserMixin ,db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return (self.user_id)
 
 @login.user_loader 
 def load_user(id):
