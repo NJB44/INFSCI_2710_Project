@@ -1,3 +1,5 @@
+drop table user;
+
 CREATE TABLE `user`(
 `user_id` varchar(64) NOT NULL,
 `username` varchar(20) NOT NULL unique,
@@ -26,5 +28,3 @@ values ("DT1013066794", "demo_doctor_1", "doctor","pbkdf2:sha256:150000$kbUR6pm0
 #generate_password_hash('pharmacy_pass_2')
 #generate_password_hash('plant_pass_1')
 #generate_password_hash('plant_pass_2')
-
-drop table user;

@@ -104,7 +104,7 @@ class prescription_order(db.Model):
     doc_id = db.Column(db.String(12),db.ForeignKey("doctor.doc_id"))
     m_id = db.Column(db.String(5),db.ForeignKey("medicine.m_id"))
     pc_id = db.Column(db.String(8))
-    order_quant = db.Column(db.Integer)
+    Quantity = db.Column(db.Integer)
     order_price = db.Column(db.Float) 
     pc_id = db.Column(db.String(8), db.ForeignKey("pharm.pc_id"))
 
