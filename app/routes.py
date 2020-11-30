@@ -11,6 +11,7 @@ from app.forms import DocPresc, LoginForm, PatNewApt, PharmacyBuy, PharmacySearc
 from . import login
 from flask_login import current_user, login_user, logout_user
 from sqlalchemy import func, desc, asc
+import json
 
 
 @app.route('/')
@@ -125,16 +126,18 @@ def doc_presc():
     #FORM
     form = DocPresc()
     if form.validate_on_submit():
-        presc_id = 1 #temp
+        highest_id= db.session.query(prescription_order).order_by(prescription_order.Order_id.desc()).first()
+        highest_id_num = int(highest_id.order_id[1:])
+        presc_id = "O" + str(highest_id_num + 1)
         order_date = form.order_date.data
         pat_id = form.pat_id.data   
         doc_id = current_user.user_id 
         m_id = form.m_id.data   
         pc_id = form.pc_id.data   
         order_quant = form.order_quant.data
-        order_price = 1 #change to query from pharmacy TODO 
+        order_price = db.session.query(pharm_inven).filter(and_(pharm_inven.m_id==m_id, pharm_inven.pc_id == pc_id)).first().price
         presc = prescription_order(order_id = presc_id, order_status = "pending", order_date = order_date, pat_id = pat_id, doc_id =doc_id, m_id = m_id, pc_id = pc_id, order_quant = order_quant, order_price = order_price)
-        db.session.add(prescription_order)
+        db.session.add(presc)
         db.session.commit()
 
     return render_template('doctor_write_prescription.html', form = form)
@@ -185,9 +188,9 @@ def pharm_inv():
     inventory = db.session.query(pharm_inven, medicine).filter(pc_id == pharm_inven.pc_id ).join(medicine, pharm_inven.m_id == medicine.m_id).all()
     return render_template('pharmacy_inventory.html', inv = inventory)
 
-@app.route('/pharmacy_home/pharmacy_search',methods=["GET","POST"])
+@app.route('/pharmacy_home/pharmacy_shop',methods=["GET","POST"])
 @login_required
-def pharm_search():
+def pharm_shop():
     #FORM
     search_form = PharmacySearch()
     checkout_form = PharmacyShoppingCart()
@@ -211,33 +214,59 @@ def pharm_search():
         else: 
             products = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(and_(plant_inven.pp_id == plant_id, medicine.m_medicine.like(search))).all()
         search_form = PharmacySearch()
-        return render_template('pharmacy_search.html', search_form= search_form, products = products,checkout_form = checkout_form, checkout = True, search = False)
-        #return redirect(url_for('pharm_shop', products=products))
+        return render_template('pharmacy_shop.html', search_form= search_form, products = products,checkout_form = checkout_form, checkout = True, search = False)
+
     if checkout_form.validate_on_submit():
+        #set up the values for insertion to database
+        purchased_products = json.loads(checkout_form.order_list.data)
+        pp_id = checkout_form.pp_id.data
+        pc_id = current_user.user_id
+        s_status = "pending"
+
+        #find next s_id
         highest_id= db.session.query(shipments).order_by(shipments.s_id.desc()).first()
         highest_id_num = int(highest_id.s_id[1:])
         s_id = "S" + str(highest_id_num + 1)
+        
+        for m_id in purchased_products:
 
-        print("Checked out")
-        return redirect(url_for('pharmacy_search_history'))
-    return render_template('pharmacy_search.html', search_form = search_form, checkout= False, search = True)
+            #calculate Total Cost
+            s_Quant = purchased_products[m_id]
+            plant_inven_row = db.session.query(plant_inven).filter(and_(plant_inven.pp_id == pp_id, plant_inven.m_id == m_id)).first()
+            unit_price = plant_inven_row.unit_price
+            TotalCost = s_Quant * unit_price
+
+            #insert new shipment row
+            new_shipment_row = shipments(s_id=s_id, pp_id = pp_id, m_id = m_id, pc_id = pc_id, s_Quant = s_Quant, TotalCost = TotalCost, s_status = s_status)
+            db.add(new_shipment_row)
+
+            #edit plant inventory
+            plant_inven_row.stock_quant = plant_inven_row.stock_quant - s_Quant
+
+            #edit pharmacy inventory
+            pharm_inven_row = db.session.query(pharm_inven).filter(and_(pharm_inven.pc_id == pc_id, pharm_inven.m_id == m_id)).first()
+            pharm_inven_row.quant = pharm_inven_row.quant + s_Quant
+
+            #commit to database
+            db.commit()
+            
+        return redirect(url_for('pharmacy_ship_hist'))
+    return render_template('pharmacy_shop.html', search_form = search_form, checkout= False, search = True)
 
 
 @app.route('/pharmacy_home/pharmacy_summary')
 @login_required
 def pharm_summ():
-    #QUERY
     pc_id = current_user.user_id
     unique_med_quant = db.session.query(pharm_inven).filter(pharm_inven.pc_id == pc_id).count()
-    total_med_quant = int(db.session.query(func.sum(pharm_inven.quant)).scalar())
-    total_inven_value =db.session.query(func.sum(pharm_inven.quant * pharm_inven.price)).scalar()    #TODO query for real summary measures here
+    total_med_quant = int(db.session.query(func.sum(pharm_inven.quant)).filter(pharm_inven.pc_id == pc_id).scalar())
+    total_inven_value =db.session.query(func.sum(pharm_inven.quant * pharm_inven.price)).filter(pharm_inven.pc_id == pc_id).scalar()    #TODO query for real summary measures here
     summary_measures = {'unique_medicine_quant': unique_med_quant, 'total_medicine_quant': total_med_quant, 'total_stock_value': total_inven_value}
     return render_template('pharmacy_summary.html', summary_measures = summary_measures)
 
 @app.route('/pharmacy_home/shipment_history')
 @login_required
 def pharm_ship_hist():
-    #QUERY
     pc_id = current_user.user_id 
     hist_shipments = db.session.query(shipments).filter(pc_id == shipments.pc_id).all()
     return render_template('pharmacy_shipment_history.html', shipments = hist_shipments)
@@ -251,7 +280,6 @@ def plant_home():
 @app.route('/plant_home/inventory')
 @login_required
 def plant_inv():
-    #QUERY
     pp_id = current_user.user_id 
     inventory = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id == medicine.m_id).filter(pp_id == plant_inven.pp_id ).all()
     return render_template('plant_inventory.html', inv = inventory)
@@ -259,7 +287,6 @@ def plant_inv():
 @app.route('/plant_home/plant_conf')
 @login_required
 def plant_order_conf():
-    #FORM
     form = PlantOrderConf()
     if form.validate_on_submit():
         pass

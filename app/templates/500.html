@@ -21,30 +21,7 @@
 
 {% block content %}
 
- <img src="{{url_for('static', filename = '500.jpg')}}" alt="500 error">
+ <img src="{{url_for('static', filename = '500.jpg')}}" alt="500 error" style="max-width: 30% ;height: auto;">
+ <h3>Sorry, we appear to be having technical difficulties</h3>
     
 {% endblock  %}
-
-
-{% block styles %}
-    
-
-<style>  
-        * {
-            margin: 0;
-            padding: 0;
-        }
-        .imgbox {
-            display: grid;
-            height: 100%;
-        }
-        .center-fit {
-            max-width: 100%;
-            max-height: 100vh;
-            margin: auto;
-        }
-
-</style> 
-
-{% endblock  %}
-

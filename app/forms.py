@@ -85,18 +85,16 @@ class PharmacySearch(FlaskForm):
 
 class PharmacyShoppingCart(FlaskForm):
     #needs
-    ##s_id
+    ##s_id (created dynamically afterward)
     ##pp_id
-    ##m_id
-    ##pc_id
-    ##s_quant
-    ##totalCost
-    ##s_order_date
-    ##ship_date
-    ##s_status
-    ##unit_price
-    shopping_queries = HiddenField()
-    update_queries = HiddenField()
+    pp_id = HiddenField()
+    ##pc_id #fetched from current user
+    ##s_quant (in the )
+    ##totalCost (calculated_later)
+    ##s_status (done later)
+    ##unit_price fetched by query
+    #order_list (fetched from url??)
+    order_list = StringField(id="order_list", default="{}") #format: m_id:quant|m_id:quant
     submit = SubmitField("Checkout")
 
 

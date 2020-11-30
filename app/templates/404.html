@@ -21,31 +21,9 @@
 
 {% block content %}
 
- <img src="{{url_for('static',filename= '404.jpg')}}" alt="404 error">
+ <img src="{{url_for('static',filename= '404.jpg')}}" alt="404 error" style="max-width: 100% ;height: auto;">
+ <h3>Sorry, we couldn't find that page</h3>
     
 {% endblock  %}
-
-
-
-{% block styles %}
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-        .imgbox {
-            display: grid;
-            height: 100%;
-        }
-        .center-fit {
-            max-width: 100%;
-            max-height: 100vh;
-            margin: auto;
-        }
-
-    </style> 
- 
-{% endblock  %}
-
 
 
