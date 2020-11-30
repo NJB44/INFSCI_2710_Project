@@ -206,27 +206,14 @@ def pharm_search():
         return render_template('pharmacy_search.html', search_form= search_form, products = products,checkout_form = checkout_form, checkout = True, search = False)
         #return redirect(url_for('pharm_shop', products=products))
     if checkout_form.validate_on_submit():
+        highest_id= db.session.query(shipments).order_by(shipments.s_id.desc()).first()
+        highest_id_num = int(highest_id.s_id[1:])
+        s_id = "S" + str(highest_id_num + 1)
+
         print("Checked out")
         return redirect(url_for('pharmacy_search_history'))
     return render_template('pharmacy_search.html', search_form = search_form, checkout= False, search = True)
 
-#@app.route('/pharmacy_shopping<products>')
-#def pharm_shop(plant_id, search, by, order):
-#    #QUERY Replace with content from
-#    form = PharmacyShoppingCart()
-#    #plant_id = current_user.user_id 
-#    products = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(and_(plant_inven.pp_id == plant_id, medicine.m_medicine.like(search))).all()
-#    return render_template('pharmacy_shopping.html', products = products)
-
-
-#@app.route('/pharmacy_home/pharmacy_med_purchase')
-#def pharm_buy(shopping_cart):
-#    #FORM
-#    form = PharmacyBuy()
-#    if form.validate_on_submit():
-#        #send to the browsing page
-#        pass 
-#    return render_template('pharmacy_search.html', form = form, items = shopping_cart)
 
 @app.route('/pharmacy_home/pharmacy_summary')
 def pharm_summ():
