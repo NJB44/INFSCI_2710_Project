@@ -11,11 +11,13 @@
 
   * install python3.6 or higher
 
-  * install poetry (pip3 install poetry)
+  * install poetry (follow instructions here and add to path: https://python-poetry.org/docs/ )
 
-  * from the base project folder: poetry shell
+  * from the base project folder: poetry install 
 
-  * inside the shell: flask run
+  * from the base project folder: poetry shell 
+
+  * inside the shell: flask run 
 
   * open the link created in a browser (set to http://127.0.0.1:5000/)
 
