@@ -88,7 +88,7 @@ class pharm(db.Model):
 
 
 class pharm_inven(db.Model):
-    pc_id = db.Column(db.String(8), db.ForeignKey("pharmacy.pc_id"), primary_key= True) #prim key
+    pc_id = db.Column(db.String(8), db.ForeignKey("pharm.pc_id"), primary_key= True) #prim key
     m_id = db.Column(db.String(5), db.ForeignKey("medicine.m_id"), primary_key= True) #prim key
     quant = db.Column(db.Integer)
     price = db.Column(db.Float) 

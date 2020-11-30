@@ -1,3 +1,4 @@
+from wtforms.fields.simple import HiddenField, TextField
 from app.models import medicine
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
@@ -5,6 +6,7 @@ from wtforms.fields.core import DateField, FloatField, SelectField, TimeField
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from wtforms.fields.html5 import EmailField
+from app import db
 
 class RegistrationPharmForm(FlaskForm):
     username = StringField('User Name', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'usernames must have only letters, ''numbers, dots or underscores')])
@@ -79,15 +81,22 @@ class PharmacyOrder(FlaskForm):
     submit = SubmitField("Submit Registration")
 
 class PharmacySearch(FlaskForm):
-    searchbar = StringField("search by medicine name here")
-    #query to populate the pharmacy dropdown
-    pharmacy = SelectField("select a pharmacy to shop from", choices=["pharmacy 1", "pharmacy 2"])
-    sortby = SelectField("sort by", choices=["price", "alphabetical"])
+    search = StringField("search by medicine name here")
+    #change to query to populate the pharmacy dropdown
+    plant = SelectField("select a pharmacy plant to shop from", choices=["PP200053", "PP323961"])
+    sortby = SelectField("sort by", choices=["unit_price", "stock_quant"])
     order = SelectField("order", choices = ["ascending","descending"])
     submit = SubmitField("Submit Registration")
 
+class PharmacyShoppingCart(FlaskForm):
+    shopping_queries = HiddenField()
+    update_queries = HiddenField()
+    submit = SubmitField("Checkout")
+
+
 class PharmacyBuy(FlaskForm):
     submit = SubmitField("Submit Registration")
+
 
 #####Plant forms
 class PlantOrderConf(FlaskForm):
@@ -102,12 +111,12 @@ class PlantAddStock(FlaskForm):
 
 class PlantEditStock(FlaskForm):
     medicine = StringField("id of medicine to edit", validators=[Required()]) #ought to be a dropdown or validated
+    quantity = IntegerField("How many?", validators= [Required()])
     unit_price = FloatField("What price should it be?", validators=[Required()])
     submit = SubmitField("Confirm")
 
 class PlantRemoveStock(FlaskForm):
     medicine = StringField("id of medicine to remove", validators=[Required()]) #ought to be a dropdown or validated
-    quantity = IntegerField("how many?", validators=[Required()])
     submit = SubmitField("Confirm")
 
 ###Misc 

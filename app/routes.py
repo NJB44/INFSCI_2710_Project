@@ -1,3 +1,4 @@
+from operator import and_
 from os.path import join
 from flask.globals import request
 from flask.helpers import url_for
@@ -6,16 +7,21 @@ from app.models import doctor, medicine, patient, pharm, pharm_inven, pharm_plan
 from app import db
 from flask import render_template, flash, redirect
 from app import app
-from app.forms import DocPresc, LoginForm, PatNewApt, PharmacyBuy, PharmacySearch, PlantAddStock, PlantEditStock, PlantOrderConf, PlantRemoveStock, RegistrationDocForm, RegistrationPatientForm, RegistrationPharmForm, RegistrationPlantForm
+from app.forms import DocPresc, LoginForm, PatNewApt, PharmacyBuy, PharmacySearch, PharmacyShoppingCart, PlantAddStock, PlantEditStock, PlantOrderConf, PlantRemoveStock, RegistrationDocForm, RegistrationPatientForm, RegistrationPharmForm, RegistrationPlantForm
 from . import login
 from flask_login import current_user, login_user, logout_user
+from sqlalchemy import func, desc, asc
 
 
 @app.route('/')
 @app.route('/index')
 def index():
-    user = {'username': 'test'}
-    return render_template('index.html', title='test', user = user)
+    if current_user.is_authenticated:
+        usr = db.session.query(user).filter(user.user_id == current_user.user_id).first()
+        text = "you are logged in as a " + str(usr.user_type)
+    else:
+        text = "you are not logged in"
+    return render_template('index.html', title='test', text = text)
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -172,42 +178,64 @@ def pharm_inv():
     inventory = db.session.query(pharm_inven, medicine).filter(pc_id == pharm_inven.pc_id ).join(medicine, pharm_inven.m_id == medicine.m_id).all()
     return render_template('pharmacy_inventory.html', inv = inventory)
 
-@app.route('/pharmacy_home/pharmacy_search')
+@app.route('/pharmacy_home/pharmacy_search',methods=["GET","POST"])
 def pharm_search():
     #FORM
-    form = PharmacySearch()
-    if form.validate_on_submit():
+    search_form = PharmacySearch()
+    checkout_form = PharmacyShoppingCart()
+    if search_form.validate_on_submit():
         #send to the browsing page
         ##QUERY here based on form input
-        plant_id = current_user.user_id
-        products = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(plant_inven.pp_id == plant_id).all()
-        pharm_shop(products) #TODO this likely doesn't work
-        pass 
-    return render_template('pharmacy_search.html', form = form)
+        plant_id = search_form.plant.data
+        search = "%{}%".format(search_form.search.data) 
+        sortby = search_form.sortby.data
+        order = search_form.order.data
+        if order == "ascending":
+            if sortby == "unit_price":
+                products = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(and_(plant_inven.pp_id == plant_id, medicine.m_medicine.like(search))).order_by(plant_inven.unit_price.asc()).all()
+            elif sortby == "stock_quant":
+                products = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(and_(plant_inven.pp_id == plant_id, medicine.m_medicine.like(search))).order_by(plant_inven.stock_quant.asc()).all()
+        elif order == "descending":
+            if sortby == "unit_price":
+                products = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(and_(plant_inven.pp_id == plant_id, medicine.m_medicine.like(search))).order_by(plant_inven.unit_price.desc()).all()
+            elif sortby == "stock_quant":
+                products = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(and_(plant_inven.pp_id == plant_id, medicine.m_medicine.like(search))).order_by(plant_inven.stock_quant.desc()).all()
+        else: 
+            products = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(and_(plant_inven.pp_id == plant_id, medicine.m_medicine.like(search))).all()
+        search_form = PharmacySearch()
+        return render_template('pharmacy_search.html', search_form= search_form, products = products,checkout_form = checkout_form, checkout = True, search = False)
+        #return redirect(url_for('pharm_shop', products=products))
+    if checkout_form.validate_on_submit():
+        print("Checked out")
+        return redirect(url_for('pharmacy_search_history'))
+    return render_template('pharmacy_search.html', search_form = search_form, checkout= False, search = True)
 
-@app.route('/pharmacy_home/shopping')
-def pharm_shop():
-    #QUERY Replace with content from
-    plant_id = current_user.user_id 
-    prods = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(plant_inven.pp_id == plant_id).all()
-    return render_template('pharmacy_shopping.html', products = prods)
+#@app.route('/pharmacy_shopping<products>')
+#def pharm_shop(plant_id, search, by, order):
+#    #QUERY Replace with content from
+#    form = PharmacyShoppingCart()
+#    #plant_id = current_user.user_id 
+#    products = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(and_(plant_inven.pp_id == plant_id, medicine.m_medicine.like(search))).all()
+#    return render_template('pharmacy_shopping.html', products = products)
 
 
-@app.route('/pharmacy_home/pharmacy_med_purchase')
-def pharm_buy(shopping_cart):
-    #FORM
-    form = PharmacyBuy()
-    if form.validate_on_submit():
-        #send to the browsing page
-        pass 
-    return render_template('pharmacy_search.html', form = form, items = shopping_cart)
+#@app.route('/pharmacy_home/pharmacy_med_purchase')
+#def pharm_buy(shopping_cart):
+#    #FORM
+#    form = PharmacyBuy()
+#    if form.validate_on_submit():
+#        #send to the browsing page
+#        pass 
+#    return render_template('pharmacy_search.html', form = form, items = shopping_cart)
 
 @app.route('/pharmacy_home/pharmacy_summary')
 def pharm_summ():
     #QUERY
     pc_id = current_user.user_id
-    #TODO query for real summary measures here
-    summary_measures = {'unique_medicine_quant': 20, 'total_stock_value': 500, 'total_medicine_quant': 3000}
+    unique_med_quant = db.session.query(pharm_inven).filter(pharm_inven.pc_id == pc_id).count()
+    total_med_quant = int(db.session.query(func.sum(pharm_inven.quant)).scalar())
+    total_inven_value =db.session.query(func.sum(pharm_inven.quant * pharm_inven.price)).scalar()    #TODO query for real summary measures here
+    summary_measures = {'unique_medicine_quant': unique_med_quant, 'total_medicine_quant': total_med_quant, 'total_stock_value': total_inven_value}
     return render_template('pharmacy_summary.html', summary_measures = summary_measures)
 
 @app.route('/pharmacy_home/shipment_history')
@@ -249,10 +277,10 @@ def plant_add_stock():
     #FORM
     form = PlantAddStock()
     if form.validate_on_submit():
-        new_inven = plant_inven(m_id = form.medicine.data, pp_id = current_user.user_id, stock_quant =  form.quantity.data, unit_price = form.unit_price.data)
+        new_inven = plant_inven(m_id = form.medicine.data, pp_id = current_user.user_id, stock_quant =  int(form.quantity.data ), unit_price = float(form.unit_price.data))
         db.session.add(new_inven)
         db.session.commit()
-        return redirect('plant_inventory.html')
+        return redirect(url_for('plant_inv'))
 
     return render_template('plant_add_stock.html', form = form)
 
@@ -261,9 +289,11 @@ def plant_edit_stock():
     #FORM
     form = PlantEditStock()
     if form.validate_on_submit():
-        edit_inven = 1 #query here
-        edit_inven = plant_inven(m_id = form.medicine.data, pp_id = current_user.user_id, stock_quant =  form.quantity.data, unit_price = form.unit_price.data)
+        edited_inven = db.session.query(plant_inven).filter(and_(plant_inven.m_id == form.medicine.data, plant_inven.pp_id == current_user.user_id)).first()
+        edited_inven.stock_quant = form.quantity.data
+        edited_inven.unit_price = form.unit_price.data
         db.session.commit()
+        return redirect(url_for('plant_inv'))
 
     return render_template('plant_edit_stock.html', form = form)
 
@@ -272,9 +302,11 @@ def plant_remove_stock():
     #FORM
     form = PlantRemoveStock()
     if form.validate_on_submit():
-        rem_inven = plant_inven(m_id = form.medicine.data, pp_id = current_user.user_id, stock_quant =  form.quantity.data, unit_price = form.unit_price.data)
-        db.session.remove(rem_inven)
+        rem_inven = db.session.query(plant_inven).filter(and_(plant_inven.m_id == form.medicine.data, plant_inven.pp_id == current_user.user_id)).first() 
+        db.session.delete(rem_inven)
         db.session.commit()
+        return redirect(url_for('plant_inv'))
+
     return render_template('plant_remove_stock.html', form = form)
 
 

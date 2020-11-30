@@ -1,13 +1,6 @@
 {% extends "pharmacy_view.html"%}
 
 
-
-<ul>
-    {% for medicine in stocked_medicines %}
-    <li>{{medicine}}</li>
-    {% endfor %}
-</ul>
-
 {% block content %}
    {% for prod in products %}
        
@@ -27,6 +20,7 @@
     </div>
     
    {% endfor %} 
+
 
 {% endblock  %}
 
