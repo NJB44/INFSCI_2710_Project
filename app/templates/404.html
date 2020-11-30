@@ -1,5 +1,51 @@
-{%extends "index.html"%}
+{%extends "base.html"%}
+{% from 'bootstrap/nav.html' import render_nav_item %}
+
+{% block navbar %}
+
+<nav class="navbar navbar-expand-md navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="{{url_for('index')}}">SmartPharm</a>
+        <ul class="nav navbar-nav">
+            {{ render_nav_item('patient_register', 'patient registration') }}
+            {{ render_nav_item('doctor_register', 'doctor registration') }}
+            {{ render_nav_item('pharmacy_register', 'pharmacy registration') }}
+            {{ render_nav_item('plant_register', 'plant registration') }}
+            {{ render_nav_item('login', 'login') }}
+            {{ render_nav_item('logout', 'logout') }}
+        </ul>
+    </div>
+</nav>
+
+{% endblock  %}
+
+{% block content %}
+
+ <img src="{{url_for('static',filename= '404.jpg')}}" alt="404 error">
+    
+{% endblock  %}
+
+
 
 {% block styles %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename="style.css")}}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .imgbox {
+            display: grid;
+            height: 100%;
+        }
+        .center-fit {
+            max-width: 100%;
+            max-height: 100vh;
+            margin: auto;
+        }
+
+    </style> 
+ 
 {% endblock  %}
+
+
+

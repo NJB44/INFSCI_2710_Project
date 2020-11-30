@@ -47,8 +47,6 @@ class RegistrationDocForm(FlaskForm):
     password2 = PasswordField('Confirm Password', validators=[Required()])
     first_name = StringField('Doctor First Name', validators=[Required()])
     last_name = StringField('Doctor Last Name', validators=[Required()])
-    email = EmailField('Doctor Email', validators=[Required(), Email()])
-    phone_num = StringField('Doctor Phone Number', validators=[Required(), Regexp('^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$')])
     specialty = StringField('Doctor Specialty', validators=[Required()])
     address = StringField('Doctor Address')
     city = StringField('Doctor City')

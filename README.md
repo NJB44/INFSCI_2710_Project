@@ -18,3 +18,5 @@
   * inside the shell: flask run
 
   * open the link created in a browser (set to http://127.0.0.1:5000/)
+
+* Still working on getting Heroku to work but the host url is: https://smartpharm-infsci2710.herokuapp.com/

@@ -115,10 +115,12 @@ def logout():
 
 ######Doctor Pages
 @app.route('/doctor_home')
+@login_required
 def doc_home():
     return render_template('doctor_home.html')
 
 @app.route('/doctor_home/write_prescription')
+@login_required
 def doc_presc():
     #FORM
     form = DocPresc()
@@ -138,6 +140,7 @@ def doc_presc():
     return render_template('doctor_write_prescription.html', form = form)
 
 @app.route('/doctor_home/check_appointments')
+@login_required
 def doc_apt():
     user_id = current_user.user_id 
     doctors_apt = db.session.query(doctor, appointment).filter(user_id == doctor.doc_id).join(appointment, doctor.doc_id == appointment.doc_id).all()
@@ -145,10 +148,12 @@ def doc_apt():
 
 ######Patient Pages
 @app.route('/patient_home')
+@login_required
 def pat_home():
     return render_template('patient_home.html')
 
 @app.route('/patient_home/create_appointment')
+@login_required
 def pat_new_apt():
     #FORM
     form = PatNewApt()
@@ -161,24 +166,27 @@ def pat_new_apt():
     return render_template('patient_create_appointment.html', form = form)
 
 @app.route('/patient_home/check_appointments')
+@login_required
 def pat_check_apt():
     user_id = current_user.user_id 
     pat_apt = db.session.query(patient, appointment).join(appointment, patient.pat_id == appointment.pat_id).filter(patient.pat_id == user_id).all()
     return render_template('patient_check_appointments.html', appointments = pat_apt)
 
 ######Pharmacy Pages
-@login_required
 @app.route('/pharmacy_home')
+@login_required
 def pharm_home():
     return render_template('pharmacy_home.html')
 
 @app.route('/pharmacy_home/pharmacy_inventory')
+@login_required
 def pharm_inv():
     pc_id = current_user.user_id 
     inventory = db.session.query(pharm_inven, medicine).filter(pc_id == pharm_inven.pc_id ).join(medicine, pharm_inven.m_id == medicine.m_id).all()
     return render_template('pharmacy_inventory.html', inv = inventory)
 
 @app.route('/pharmacy_home/pharmacy_search',methods=["GET","POST"])
+@login_required
 def pharm_search():
     #FORM
     search_form = PharmacySearch()
@@ -216,6 +224,7 @@ def pharm_search():
 
 
 @app.route('/pharmacy_home/pharmacy_summary')
+@login_required
 def pharm_summ():
     #QUERY
     pc_id = current_user.user_id
@@ -226,6 +235,7 @@ def pharm_summ():
     return render_template('pharmacy_summary.html', summary_measures = summary_measures)
 
 @app.route('/pharmacy_home/shipment_history')
+@login_required
 def pharm_ship_hist():
     #QUERY
     pc_id = current_user.user_id 
@@ -234,10 +244,12 @@ def pharm_ship_hist():
 
 ######Plant Pages
 @app.route('/plant_home')
+@login_required
 def plant_home():
     return render_template('plant_home.html')
 
 @app.route('/plant_home/inventory')
+@login_required
 def plant_inv():
     #QUERY
     pp_id = current_user.user_id 
@@ -245,6 +257,7 @@ def plant_inv():
     return render_template('plant_inventory.html', inv = inventory)
 
 @app.route('/plant_home/plant_conf')
+@login_required
 def plant_order_conf():
     #FORM
     form = PlantOrderConf()
@@ -253,6 +266,7 @@ def plant_order_conf():
     return render_template('plant_conf.html', form = form)
 
 @app.route('/plant_home/plant_shipment_history')
+@login_required
 def plant_ship_hist():
     #QUERY
     pp_id = current_user.user_id 
@@ -260,6 +274,7 @@ def plant_ship_hist():
     return render_template('plant_shipment_history.html', shipments = hist_shipments)
 
 @app.route('/plant_add_stock', methods = ["GET", "POST"])
+@login_required
 def plant_add_stock():
     #FORM
     form = PlantAddStock()
@@ -272,6 +287,7 @@ def plant_add_stock():
     return render_template('plant_add_stock.html', form = form)
 
 @app.route('/plant_edit_stock', methods=["GET", "POST"])
+@login_required
 def plant_edit_stock():
     #FORM
     form = PlantEditStock()
@@ -285,6 +301,7 @@ def plant_edit_stock():
     return render_template('plant_edit_stock.html', form = form)
 
 @app.route('/plant_remove_stock', methods = ["GET", "POST"])
+@login_required
 def plant_remove_stock():
     #FORM
     form = PlantRemoveStock()
