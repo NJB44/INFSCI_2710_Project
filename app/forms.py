@@ -1,11 +1,8 @@
 from wtforms.fields.simple import HiddenField, TextField
-from app.models import medicine
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
-from wtforms.fields.core import DateField, FloatField, SelectField, TimeField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField
+from wtforms.fields.core import FloatField, SelectField, TimeField
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
-from wtforms import ValidationError
-from wtforms.fields.html5 import EmailField
 from app import db
 
 class RegistrationPharmForm(FlaskForm):
@@ -89,6 +86,17 @@ class PharmacySearch(FlaskForm):
     submit = SubmitField("Submit Registration")
 
 class PharmacyShoppingCart(FlaskForm):
+    #needs
+    ##s_id
+    ##pp_id
+    ##m_id
+    ##pc_id
+    ##s_quant
+    ##totalCost
+    ##s_order_date
+    ##ship_date
+    ##s_status
+    ##unit_price
     shopping_queries = HiddenField()
     update_queries = HiddenField()
     submit = SubmitField("Checkout")
