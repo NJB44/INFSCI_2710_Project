@@ -24,6 +24,7 @@
                 Unit Price: {{prod.plant_inven.unit_price}} |
                 Remaining:<span id="rem-{{prod.plant_inven.m_id}}"> {{prod.plant_inven.stock_quant}} </span> |
                 In Cart: <span id="cart-{{prod.plant_inven.m_id}}">0</span></p>
+               <p><span id="errors" style="color:red"></span></p>
             </p>
             <button class="btn btn-outline-primary" id="dec-{{prod.plant_inven.m_id}}" onclick="decrement(this.id)">-</button>
             <input type="text" id="quant-{{prod.plant_inven.m_id}}" size="4">
@@ -48,7 +49,3 @@
 {% endblock  %}
 
 
-
-dec-M4577
-inc-M3371
-inc-M5413

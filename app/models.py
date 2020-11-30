@@ -61,9 +61,9 @@ class plant_inven(db.Model):
 
 class shipments(db.Model):
     s_id = db.Column(db.String(9), primary_key=True)
-    pp_id = db.Column(db.String(8),db.ForeignKey("plant.pp_id"))
+    pp_id = db.Column(db.String(8),db.ForeignKey("pharm_plant.pp_id"))
     m_id = db.Column(db.String(5),db.ForeignKey("medicine.m_id"))
-    pc_id = db.Column(db.String(8),db.ForeignKey("pharmacy.pc_id"))
+    pc_id = db.Column(db.String(8),db.ForeignKey("pharm.pc_id"))
     s_Quant = db.Column(db.Integer)
     TotalCost = db.Column(db.Float) 
     s_order_date = db.Column(db.Date) 

@@ -7,7 +7,7 @@ function increment(button_id) {
     common_id = button_id.split("-M")[1] 
     if (legal_add(common_id)) {
 
-        remaining_elem = document.getElementById('rem-M'+commn_id);
+        remaining_elem = document.getElementById('rem-M'+common_id);
         cart_elem = document.getElementById('cart-M'+common_id);
 
         inc_val = parseInt(document.getElementById('quant-M' + common_id).value)
@@ -131,6 +131,9 @@ function render_error(common_id){
     else {
         error = "error"
     }
+
+    error_textbox = document.getElementById('errors')
+    error_textbox.innerText = error
 
     return error
 }

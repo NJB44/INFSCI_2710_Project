@@ -9,7 +9,7 @@ class RegistrationPharmForm(FlaskForm):
     username = StringField('User Name', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'usernames must have only letters, ''numbers, dots or underscores')])
     password = PasswordField('Password', validators=[Required(), EqualTo('password2', message = "Passwords must be identical")])
     password2 = PasswordField('Confirm Password', validators=[Required()])
-    name = StringField('Pharmacy Name', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'Name must have only letters, ''numbers, dots or underscores')])
+    name = StringField('Pharmacy Name', validators=[Required(), Length(1,20), ])
     address = StringField('Pharmacy Address', validators=[Required(), Length(1,64)])
     city = StringField('Pharmacy City', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'City must have only letters')])
     state = StringField('Pharmacy State', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z_.]*$', 0,'State must have only letters')])
@@ -20,8 +20,8 @@ class RegistrationPlantForm(FlaskForm):
     username = StringField('User Name', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'usernames must have only letters, ''numbers, dots or underscores')])
     password = PasswordField('Password', validators=[Required(), EqualTo('password2', message = "Passwords must be identical")])
     password2 = PasswordField('Confirm Password', validators=[Required()])
-    name = StringField('Plant Name', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'Name must have only letters, ''numbers, dots or underscores')])
-    address = StringField('Plant Address', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'Address must have only letters, ''numbers, dots or underscores')])
+    name = StringField('Plant Name', validators=[Required(), Length(1,20), ])
+    address = StringField('Plant Address', validators=[Required(), Length(1,20), ])
     city = StringField('Plant City', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,'City must have only letters')])
     state = StringField('Plant State', validators=[Required(), Length(1,20), Regexp('^[A-Za-z][A-Za-z_.]*$', 0,'State must have only letters')])
     zipcode = IntegerField('Plant Zipcode', validators=[Required()])
@@ -37,8 +37,8 @@ class RegistrationPatientForm(FlaskForm):
     gender = SelectField("Patient Gender", validators=[Required()], choices = ["M", "F"])
     ethnicity = SelectField("Patient ethnicity", validators=[Required()], choices= ["American Indian or Alaska Native", "Asian", "Black or African American", "Hispanic or Latino", "Native Hawaiian or Other Pacific Islander", "White"])
     dob = StringField("Patient date of birth", validators=[Required(), Regexp('^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$', 0, 'Date must be in YYYY-MM-DD format')])
-    email_address = StringField('Patient Email Address', validators=[Required(), Regexp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', 0, "must be a valid phone-number (###-###-####)")])
-    phone_number = StringField('Patient Phone Number', validators=[Required(), Regexp('[2-9]\d{2}-\d{3}-\d{4}$', 0, 'must be a valid email address')])
+    email_address = StringField('Patient Email Address', validators=[Required(), Regexp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', 0, 'must be a valid email address')])
+    phone_number = StringField('Patient Phone Number', validators=[Required(), Regexp('[2-9]\d{2}-\d{3}-\d{4}$', 0, "must be a valid phone-number (###-###-####)")  ])
     submit = SubmitField("Submit Registration")
 
 class RegistrationDocForm(FlaskForm):
@@ -56,17 +56,17 @@ class RegistrationDocForm(FlaskForm):
 
 #####Patient forms
 class PatNewApt(FlaskForm):
-    doc_id = StringField("enter doctor id here")
+    doc_id = SelectField("enter doctor id here", choices=["DT1013066794", "DT1003914227"])
     apt_date = StringField('select a day for the appointment', validators=[Required(), Regexp('^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$', 0, 'Date must be in YYYY-MM-DD format')])
     apt_time = TimeField('select a time for the appointment', validators=[Required()])
     submit = SubmitField("Submit Registration")
 
 #####Doctor forms
 class DocPresc(FlaskForm):
-    order_date = StringField("What day?", validators=[Required(),  Regexp('^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$', 0, 'Date must be in YYYY-MM-DD format')])
-    pat_id = StringField("What is the patient's id", validators=[Required()])
-    m_id = StringField("What is the medicine id", validators=[Required()])
-    pc_id = StringField("What is the pharmacy id", validators=[Required()])
+    order_date = StringField("What day was it prescribed?", validators=[Required(),  Regexp('^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$', 0, 'Date must be in YYYY-MM-DD format')])
+    pat_id = SelectField("What is the patient's id", validators=[Required()], choices= ["P56544020", "P71774482"])
+    m_id = SelectField("What is the medicine id", validators=[Required()], choices=["M1135", "M1472", "M1476", "M2559"])
+    pc_id = SelectField("What is the pharmacy id", validators=[Required()], choices = ["PC165750", "PC301085"])
     order_quant = StringField("How many are being prescribed", validators=[Required()])
     submit = SubmitField("Submit Registration")
 
@@ -84,16 +84,7 @@ class PharmacySearch(FlaskForm):
     submit = SubmitField("Submit Registration")
 
 class PharmacyShoppingCart(FlaskForm):
-    #needs
-    ##s_id (created dynamically afterward)
-    ##pp_id
-    pp_id = HiddenField()
-    ##pc_id #fetched from current user
-    ##s_quant (in the )
-    ##totalCost (calculated_later)
-    ##s_status (done later)
-    ##unit_price fetched by query
-    #order_list (fetched from url??)
+    pp_id = StringField()
     order_list = StringField(id="order_list", default="{}") #format: m_id:quant|m_id:quant
     submit = SubmitField("Checkout")
 
@@ -106,7 +97,7 @@ class PharmacyBuy(FlaskForm):
 class PlantOrderConf(FlaskForm):
     order_status = SelectField("update order status", validators = [Required()], choices = ['In Progress', 'Ready for Shipment', 'Shipped', 'Delivered'])
     submit = SubmitField("Confirm")
-
+ 
 class PlantAddStock(FlaskForm):
     medicine = StringField("id of medicine to add", validators=[Required()]) #ought to be a dropdown or validated
     quantity = IntegerField("How many?", validators= [Required()])

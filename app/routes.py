@@ -88,6 +88,7 @@ def plant_register():
         db.session.add(usr)
         db.session.commit()
         flash("You've successfully registered as a pharmacy plant")
+        return redirect('/admin')
     return render_template('plant_register.html', title = 'Sign In', form = form)
 
 @app.route('/patient_register', methods=['GET','POST'])
@@ -120,13 +121,13 @@ def logout():
 def doc_home():
     return render_template('doctor_home.html')
 
-@app.route('/doctor_home/write_prescription')
+@app.route('/doctor_home/write_prescription', methods=['GET','POST'])
 @login_required
 def doc_presc():
     #FORM
     form = DocPresc()
     if form.validate_on_submit():
-        highest_id= db.session.query(prescription_order).order_by(prescription_order.Order_id.desc()).first()
+        highest_id= db.session.query(prescription_order).order_by(prescription_order.order_id.desc()).first()
         highest_id_num = int(highest_id.order_id[1:])
         presc_id = "O" + str(highest_id_num + 1)
         order_date = form.order_date.data
@@ -134,9 +135,10 @@ def doc_presc():
         doc_id = current_user.user_id 
         m_id = form.m_id.data   
         pc_id = form.pc_id.data   
-        order_quant = form.order_quant.data
-        order_price = db.session.query(pharm_inven).filter(and_(pharm_inven.m_id==m_id, pharm_inven.pc_id == pc_id)).first().price
-        presc = prescription_order(order_id = presc_id, order_status = "pending", order_date = order_date, pat_id = pat_id, doc_id =doc_id, m_id = m_id, pc_id = pc_id, order_quant = order_quant, order_price = order_price)
+        order_quant = int(form.order_quant.data)
+        unit_price = db.session.query(pharm_inven).filter(pharm_inven.m_id==m_id).first().price
+        order_price = order_quant * unit_price
+        presc = prescription_order(order_id = presc_id, order_status = "pending", order_date = order_date, pat_id = pat_id, doc_id =doc_id, m_id = m_id, pc_id = pc_id, Quantity = order_quant, order_price = order_price)
         db.session.add(presc)
         db.session.commit()
 
@@ -146,7 +148,7 @@ def doc_presc():
 @login_required
 def doc_apt():
     user_id = current_user.user_id 
-    doctors_apt = db.session.query(doctor, appointment).filter(user_id == doctor.doc_id).join(appointment, doctor.doc_id == appointment.doc_id).all()
+    doctors_apt = db.session.query(patient, appointment).filter(user_id == appointment.doc_id).join(appointment, patient.pat_id == appointment.pat_id).all()
     return render_template('doctor_check_appointments.html', appointments = doctors_apt)
 
 ######Patient Pages
@@ -155,16 +157,17 @@ def doc_apt():
 def pat_home():
     return render_template('patient_home.html')
 
-@app.route('/patient_home/create_appointment')
+@app.route('/patient_home/create_appointment',  methods=['GET','POST'])
 @login_required
 def pat_new_apt():
     #FORM
     form = PatNewApt()
     if form.validate_on_submit():
-        appointment_id = 1 #replace with code to properly generate this
+        highest_id_num = db.session.query(appointment).order_by(appointment.apt_id.desc()).first().apt_id
+        appointment_id = highest_id_num + 1 
         user_id = current_user.user_id
-        appointment(apt_id = appointment_id, pat_id = current_user.user_id, doc_id = form.doc_id.data, schedule_day = form.schedule_day.data, apt_date = form.apt_date.data, apt_time = form.apt_time.data)
-        db.session.add(appointment)
+        apt =appointment(apt_id = appointment_id, pat_id = current_user.user_id, doc_id = form.doc_id.data, apt_date = form.apt_date.data, scedule_day = form.apt_date.data ,apt_time = form.apt_time.data)
+        db.session.add(apt)
         db.session.commit()
     return render_template('patient_create_appointment.html', form = form)
 
@@ -172,7 +175,7 @@ def pat_new_apt():
 @login_required
 def pat_check_apt():
     user_id = current_user.user_id 
-    pat_apt = db.session.query(patient, appointment).join(appointment, patient.pat_id == appointment.pat_id).filter(patient.pat_id == user_id).all()
+    pat_apt = db.session.query(doctor, appointment).filter(user_id == appointment.pat_id).join(appointment, doctor.doc_id == appointment.doc_id).all()
     return render_template('patient_check_appointments.html', appointments = pat_apt)
 
 ######Pharmacy Pages
@@ -214,6 +217,8 @@ def pharm_shop():
         else: 
             products = db.session.query(plant_inven, medicine).join(medicine, plant_inven.m_id==medicine.m_id).filter(and_(plant_inven.pp_id == plant_id, medicine.m_medicine.like(search))).all()
         search_form = PharmacySearch()
+        checkout_form.pp_id.default = str(plant_id)
+        checkout_form.pp_id.data = str(plant_id)
         return render_template('pharmacy_shop.html', search_form= search_form, products = products,checkout_form = checkout_form, checkout = True, search = False)
 
     if checkout_form.validate_on_submit():
@@ -238,19 +243,24 @@ def pharm_shop():
 
             #insert new shipment row
             new_shipment_row = shipments(s_id=s_id, pp_id = pp_id, m_id = m_id, pc_id = pc_id, s_Quant = s_Quant, TotalCost = TotalCost, s_status = s_status)
-            db.add(new_shipment_row)
+            db.session.add(new_shipment_row)
 
             #edit plant inventory
             plant_inven_row.stock_quant = plant_inven_row.stock_quant - s_Quant
 
             #edit pharmacy inventory
             pharm_inven_row = db.session.query(pharm_inven).filter(and_(pharm_inven.pc_id == pc_id, pharm_inven.m_id == m_id)).first()
-            pharm_inven_row.quant = pharm_inven_row.quant + s_Quant
+            if pharm_inven_row is not None:
+                pharm_inven_row.quant = pharm_inven_row.quant + s_Quant
+            else:
+                new_inven_row = pharm_inven(pc_id = pc_id, m_id=m_id, quant = s_Quant, price = unit_price +1)
+                db.session.add(new_inven_row)
+
 
             #commit to database
-            db.commit()
+            db.session.commit()
             
-        return redirect(url_for('pharmacy_ship_hist'))
+        return redirect(url_for('pharm_inv'))
     return render_template('pharmacy_shop.html', search_form = search_form, checkout= False, search = True)
 
 
@@ -268,7 +278,7 @@ def pharm_summ():
 @login_required
 def pharm_ship_hist():
     pc_id = current_user.user_id 
-    hist_shipments = db.session.query(shipments).filter(pc_id == shipments.pc_id).all()
+    hist_shipments = db.session.query(shipments, medicine).filter(pc_id == shipments.pc_id).join(medicine, shipments.m_id == medicine.m_id).all()
     return render_template('pharmacy_shipment_history.html', shipments = hist_shipments)
 
 ######Plant Pages
