@@ -178,7 +178,7 @@ CREATE TABLE `pharm_inven` (
   `pc_id` varchar(8) NOT NULL,
   `m_id` varchar(5) NOT NULL,
   `quant` int DEFAULT NULL,
-  `price` decimal(4,2) DEFAULT NULL,
+  `price` decimal(8,2) DEFAULT NULL,
   PRIMARY KEY (`pc_id`,`m_id`),
   KEY `m_id` (`m_id`),
   CONSTRAINT `pharm_inven_ibfk_1` FOREIGN KEY (`m_id`) REFERENCES `Medicine` (`m_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
