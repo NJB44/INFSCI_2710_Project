@@ -81,16 +81,16 @@ class PharmacySearch(FlaskForm):
     plant = SelectField("select a pharmacy plant to shop from", choices=["PP200053", "PP323961"])
     sortby = SelectField("sort by", choices=["unit_price", "stock_quant"])
     order = SelectField("order", choices = ["ascending","descending"])
-    submit = SubmitField("Submit Registration")
+    submit = SubmitField("Search")
 
 class PharmacyShoppingCart(FlaskForm):
-    pp_id = StringField()
-    order_list = StringField(id="order_list", default="{}") #format: m_id:quant|m_id:quant
+    pp_id = HiddenField()
+    order_list = HiddenField(id="order_list", default="{}") #format: m_id:quant|m_id:quant
     submit = SubmitField("Checkout")
 
 
 class PharmacyBuy(FlaskForm):
-    submit = SubmitField("Submit Registration")
+    submit = SubmitField("Checkout")
 
 
 #####Plant forms
