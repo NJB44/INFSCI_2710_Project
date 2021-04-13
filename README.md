@@ -1,7 +1,7 @@
 # INFSCI_2710_Project
 * MySQL setup instructions
 
-  * create schema using the file app/ddl_statements.sql
+  * create schema using the files sqlDDL/ddl_statements.sql and sqlDDL/user_table_insert.sql
 
   * edit line 10 in config.py to have the name of your mySQL username, password and schema name (SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:5Qf*6*oD@localhost/SmartPharm')
 
